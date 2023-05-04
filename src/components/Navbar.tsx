@@ -31,9 +31,9 @@ export default function NavBar() {
           onKeyDown={handleKeyDown}
         />
       </div>
-      <div className=" flex basis-1/4 flex-row ">
-        <a href="/join">
-          <button className="button mr-4 rounded-lg bg-slate-100 px-10 py-0">
+      <div className=" flex basis-1/4 flex-row items-center justify-center">
+        <a href="/login">
+          <button className="button mr-4 rounded-lg bg-green-400 px-8 py-2 font-bold">
             Login
           </button>
         </a>
