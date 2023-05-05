@@ -2,15 +2,19 @@ import { useState, useEffect } from "react";
 import {
   useUser,
   useSupabaseClient,
-  Session,
+  useSession,
 } from "@supabase/auth-helpers-react";
 import { Database } from "~/utils/supabase";
-import Avatar from "./Avatar";
+import Avatar from "~/components/Avatar";
+import { useRouter } from "next/router";
+
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
-export default function Account({ session }: { session: Session }) {
+export default function Account() {
   const supabase = useSupabaseClient<Database>();
   const user = useUser();
+  const session = useSession();
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<Profiles["username"]>(null);
   const [privacy, setprivacy] = useState<Profiles["privacy"]>(null);
@@ -20,15 +24,18 @@ export default function Account({ session }: { session: Session }) {
     getProfile();
   }, [session]);
 
+  //   Need to fix redirecting
   async function getProfile() {
     try {
       setLoading(true);
-      if (!user) throw new Error("No user");
+      if (!user && loading == false) {
+        router.push("/login");
+      }
 
       let { data, error, status } = await supabase
         .from("profiles")
         .select(`username, privacy, avatar_url`)
-        .eq("id", user.id)
+        .eq("id", user?.id)
         .single();
 
       if (error && status !== 406) {
@@ -40,9 +47,6 @@ export default function Account({ session }: { session: Session }) {
         setprivacy(data.privacy);
         setAvatarUrl(data.avatar_url);
       }
-    } catch (error) {
-      alert("Error loading user data!");
-      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -93,7 +97,7 @@ export default function Account({ session }: { session: Session }) {
       />
       <div>
         <label htmlFor="email">Email</label>
-        <input id="email" type="text" value={session.user.email} disabled />
+        <input id="email" type="text" value={session?.user.email} disabled />
       </div>
       <div>
         <label htmlFor="username">Username</label>

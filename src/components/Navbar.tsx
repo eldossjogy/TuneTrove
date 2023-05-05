@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import Avatar from "./Avatar";
+import ProfilePicture from "./ProfilePicture";
 import {
   useUser,
   useSession,
@@ -84,13 +84,10 @@ export default function NavBar() {
           </a>
         </div>
       ) : (
-        <div>
-
-          {/* New Avatar component for profile picture */}
-          {/* <Avatar uid={user.id} url={avatar_url} size={150} /> */}
-
-          <p>{username}</p>
-        </div>
+        <a href="/setting" className="flex items-center">
+          <ProfilePicture uid={user?.id} url={avatar_url} size={40} />
+          <h5 className="ml-3 font-bold text-white">{username}</h5>
+        </a>
       )}
     </div>
   );
