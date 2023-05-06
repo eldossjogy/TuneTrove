@@ -1,42 +1,90 @@
-export default function Rate() {
+import { ChangeEvent, useEffect, useState } from "react";
+import { Database } from "~/utils/supabase";
+import {
+  useSupabaseClient,
+  useUser,
+  useSession,
+} from "@supabase/auth-helpers-react";
+type Rates = Database["public"]["Tables"]["rates"]["Row"];
+
+export default function Rate({ album_id }: { album_id: number }) {
+  const supabase = useSupabaseClient<Database>();
+  const user = useUser();
+  const [rating, setRating] = useState<Rates["rating"]>(0);
+  const [user_id, setUser] = useState<Rates["user_id"]>("");
+  const session = useSession();
+
+  useEffect(() => {
+    if (user?.id != null) {
+      setUser(user?.id);
+    }
+  }, [session]);
+
+  async function getRating(album_id: string, user_id: string) {}
+
+  async function saveRating() {
+    console.log("Saving..." , rating,user_id,album_id);
+  }
+  async function deleteRating() {
+    console.log("deleting...");
+  }
+
+  const handleRatingChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(event.target.value);
+    if (!isNaN(value) && value >= 0 && value <= 10) {
+      setRating(value);
+    }
+  };
+  
   return (
-    <div className="rounded-md bg-stone-800 p-2">
-      <p className="font-bold">Rating:</p>
-      <div className="flex items-center justify-center text-2xl">
-        <div className="flex items-center mr-10">
-          <input
-            type="number"
-            name=""
-            id=""
-            max={10}
-            min={0}
-            defaultValue={9}
-            className="w-12 bg-transparent text-right "
-          />
-          <span className="text-xl mt-5">/</span>
-          <span className="text-xl mt-10">10</span>
+    <div>
+      {user_id ? (
+        <div className="rounded-md bg-stone-800 p-2">
+          <p className="font-bold">{album_id} Rating:</p>
+          <div className="flex items-center justify-center text-2xl">
+            <div className="mr-10 flex items-center">
+              <input
+                type="number"
+                name=""
+                id=""
+                max={10}
+                min={0}
+                defaultValue={rating}
+                onChange={handleRatingChange}
+                className="w-12 bg-transparent text-right "
+              />
+              <span className="mt-5 text-xl">/</span>
+              <span className="mt-10 text-xl">10</span>
+            </div>
+          </div>
+          <div>
+            <p className="text-md font-bold">First time rated:</p>
+            <p className="text-gray-400">209123093 at 91023</p>
+            <p className="text-md font-bold">Last time rated:</p>
+            <p className="text-gray-400">209123093 at 91023</p>
+          </div>
+          <div className="flex justify-between">
+            <button
+              type="submit"
+              className="mt-2 rounded  bg-green-500 px-2 py-1 font-bold text-white"
+              onClick={saveRating}
+            >
+              Save
+            </button>
+            <button
+              onClick={deleteRating}
+              type="submit"
+              className="mt-2 rounded bg-red-500 px-2 py-1 font-bold text-white"
+            >
+              Delete
+            </button>
+          </div>
         </div>
-      </div>
-      <div>
-        <p className="text-md font-bold">First time rated:</p>
-        <p className="text-gray-400">209123093 at 91023</p>
-        <p className="text-md font-bold">Last time rated:</p>
-        <p className="text-gray-400">209123093 at 91023</p>
-      </div>
-      <div className="flex justify-between">
-        <button
-          type="submit"
-          className="mt-2 rounded  px-2 py-1 font-bold text-white bg-green-500"
-        >
-          Save
-        </button>
-        <button
-          type="submit"
-          className="mt-2 rounded px-2 py-1 font-bold text-white bg-red-500"
-        >
-          Delete
-        </button>
-      </div>
+      ) : (
+        <div className="rounded-md bg-stone-800 p-2 font-bold mb-2 text-center">
+          Login to Rate Albums
+        </div>
+      )}
     </div>
   );
 }

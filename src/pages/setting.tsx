@@ -7,7 +7,7 @@ import {
 import { Database } from "~/utils/supabase";
 import Avatar from "~/components/Avatar";
 import { useRouter } from "next/router";
-
+import Rate from "~/components/Rate";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
 export default function Account() {
@@ -136,6 +136,8 @@ export default function Account() {
           Sign Out
         </button>
       </div>
+
+      <Rate album_id={33} />
     </div>
   );
 }

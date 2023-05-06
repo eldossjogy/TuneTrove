@@ -40,25 +40,28 @@ export interface Database {
       }
       rates: {
         Row: {
-          album_id: number | null
-          created_at: string | null
+          album_id: number
+          created_at: string
           id: number
-          updated_at: string | null
-          user_id: string | null
+          rating: number
+          updated_at: string
+          user_id: string
         }
         Insert: {
-          album_id?: number | null
-          created_at?: string | null
+          album_id: number
+          created_at?: string
           id?: number
-          updated_at?: string | null
-          user_id?: string | null
+          rating: number
+          updated_at?: string
+          user_id: string
         }
         Update: {
-          album_id?: number | null
-          created_at?: string | null
+          album_id?: number
+          created_at?: string
           id?: number
-          updated_at?: string | null
-          user_id?: string | null
+          rating?: number
+          updated_at?: string
+          user_id?: string
         }
       }
     }
