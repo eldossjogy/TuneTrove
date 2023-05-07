@@ -17,16 +17,59 @@ export default function Rate({ album_id }: { album_id: number }) {
   useEffect(() => {
     if (user?.id != null) {
       setUser(user?.id);
+      // getRating();
     }
   }, [session]);
 
-  async function getRating(album_id: string, user_id: string) {}
+  // async function getRating() {
+  //   const { data, error } = await supabase
+  //     .from("rates")
+  //     .select("created_at, updated_at, rating")
+  //     .match({ user_id: user_id, album_id: album_id });
+  //   console.log(data, error);
+  // }
 
   async function saveRating() {
-    console.log("Saving..." , rating,user_id,album_id);
+    try {
+      const { data, error } = await supabase
+        .from("rates")
+        .upsert(
+          {
+            user_id: user_id,
+            album_id: album_id,
+            rating: rating,
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "user_id, album_id" }
+        )
+        .select();
+      if (data == null) {
+        throw error;
+      }
+      // else {
+      //   console.log(data);
+      // }
+    } catch (error: any) {
+      console.log(error);
+    }
   }
+
   async function deleteRating() {
-    console.log("deleting...");
+    try {
+      const { data, error } = await supabase
+        .from("rates")
+        .delete()
+        .match({ user_id: user_id, album_id: album_id })
+        .select();
+      if (data == null) {
+        throw error;
+      }
+      // else {
+      //   console.log(data);
+      // }
+    } catch (error: any) {
+      console.log(error);
+    }
   }
 
   const handleRatingChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +78,7 @@ export default function Rate({ album_id }: { album_id: number }) {
       setRating(value);
     }
   };
-  
+
   return (
     <div>
       {user_id ? (
@@ -81,7 +124,7 @@ export default function Rate({ album_id }: { album_id: number }) {
           </div>
         </div>
       ) : (
-        <div className="rounded-md bg-stone-800 p-2 font-bold mb-2 text-center">
+        <div className="mb-2 rounded-md bg-stone-800 p-2 text-center font-bold">
           Login to Rate Albums
         </div>
       )}
