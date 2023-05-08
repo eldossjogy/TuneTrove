@@ -34,21 +34,17 @@ export default function ProfilePicture({
   }
 
   return (
-    <div>
-      {avatarUrl ? (
+     <div className="mt-2 flex items-center">
+     <div className="h-12 w-12 overflow-hidden rounded-full">
+       {avatarUrl ?
         <img
-          src={avatarUrl}
-          alt="Avatar"
-          className="avatar image rounded-full"
-          style={{ height: size, width: size }}
-        />
-      ) : (
-        <div
-          className="avatar no-image"
-          style={{ height: size, width: size  }}
-        
-        />
-      )}
-    </div>
+        src={avatarUrl
+                 }
+        alt="Your Image"
+        className="h-full w-full object-cover"
+      />
+       : <></>}
+     </div>
+   </div>
   );
 }

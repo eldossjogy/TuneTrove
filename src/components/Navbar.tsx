@@ -86,7 +86,7 @@ export default function NavBar() {
       ) : (
         <a href={`/u/${username}`} className="flex items-center">
           <ProfilePicture uid={user?.id} url={avatar_url} size={40} />
-          <h5 className="ml-3 font-bold text-white">{username}</h5>
+          <h5 className="ml-3 font-bold text-white hidden md:block">{username}</h5>
         </a>
       )}
     </div>

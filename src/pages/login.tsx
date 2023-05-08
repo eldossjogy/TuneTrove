@@ -4,13 +4,13 @@ import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
  
-const Home = () => {
+const Login = () => {
   const session = useSession();
   const supabase = useSupabaseClient();
   const router = useRouter();
   useEffect(() => {
     if (session) {
-      router.push("/setting"); // Replace '/new-route' with the desired route path
+      router.back();
     }
   }, [session, router]);
 
@@ -36,4 +36,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Login;
