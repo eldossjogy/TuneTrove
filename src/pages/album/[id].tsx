@@ -2,8 +2,18 @@ import React from "react";
 import NavBar from "~/components/Navbar";
 import Footer from "~/components/Footer";
 import Rate from "~/components/Rate";
- 
-export default function album() {
+import { useRouter } from "next/router";
+import {
+  createServerSupabaseClient,
+  User,
+} from "@supabase/auth-helpers-nextjs";
+import { GetServerSidePropsContext } from "next";
+import { Rating } from "~/utils/types";
+
+export default function album({ rating } : {rating: Rating[]}) {
+  const router = useRouter();
+  const { id } = router.query;
+  const album_id = parseInt(Array.isArray(id) ? id.join(" ") : id || "");
   return (
     <div>
       <NavBar />
@@ -42,7 +52,7 @@ export default function album() {
             </div>
           </div>
           <div className="col-span-5 rounded-md  bg-[#18181c] p-2 md:col-span-1">
-            <Rate />
+            <Rate album_id={album_id} stored_rate={rating} />
             <div>
               <p className="font-bold">Release Date</p>
               <p className="mb-2">
@@ -101,8 +111,7 @@ export default function album() {
                   style={{ flexBasis: "30%" }}
                 >
                   <p className="font-bold">
-                    {index + 1}.{" "}
-                    {item}
+                    {index + 1}. {item}
                   </p>
                   <p className="ml-4 font-semibold text-[#a3a3a3]">
                     {"Daft Punk"}
@@ -117,3 +126,34 @@ export default function album() {
     </div>
   );
 }
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const supabase = createServerSupabaseClient(ctx);
+  const album_id = ctx.params?.id;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session)
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  console.log(session.user);
+
+  // Get stored album rating
+  const { data, error } = await supabase
+    .from("rates")
+    .select("created_at, updated_at, rating")
+    .match({ user_id: session.user.id, album_id: album_id });
+
+  console.log(album_id);
+  return {
+    props: {
+      initialSession: session,
+      rating: data,
+    },
+  };
+};

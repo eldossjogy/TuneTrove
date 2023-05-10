@@ -6,28 +6,45 @@ import {
   useSession,
 } from "@supabase/auth-helpers-react";
 type Rates = Database["public"]["Tables"]["rates"]["Row"];
-
-export default function Rate({ album_id }: { album_id: number }) {
+import { Rating } from "~/utils/types";
+export default function Rate({
+  album_id,
+  stored_rate,
+}: {
+  album_id: number;
+  stored_rate: Rating[];
+}) {
   const supabase = useSupabaseClient<Database>();
   const user = useUser();
   const [rating, setRating] = useState<Rates["rating"]>(0);
+  const [createdDate, setCreateDate] = useState<Rates["created_at"]>("");
+  const [updatedDate, setUpdateDate] = useState<Rates["updated_at"]>("");
   const [user_id, setUser] = useState<Rates["user_id"]>("");
   const session = useSession();
 
+  // Only set on first load
   useEffect(() => {
-    if (user?.id != null) {
-      setUser(user?.id);
-      // getRating();
+    if (stored_rate && stored_rate.length > 0 && stored_rate[0]) {
+      if (rating != stored_rate[0].rating) {
+        if (
+          stored_rate[0].rating &&
+          stored_rate[0].created_at &&
+          stored_rate[0].updated_at
+        ) {
+          setRating(stored_rate[0].rating);
+          setCreateDate(stored_rate[0].created_at);
+          setUpdateDate(stored_rate[0].updated_at);
+          console.log(stored_rate[0].updated_at);
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user?.id) {
+      setUser(user.id);
     }
   }, [session]);
-
-  // async function getRating() {
-  //   const { data, error } = await supabase
-  //     .from("rates")
-  //     .select("created_at, updated_at, rating")
-  //     .match({ user_id: user_id, album_id: album_id });
-  //   console.log(data, error);
-  // }
 
   async function saveRating() {
     try {
@@ -46,9 +63,10 @@ export default function Rate({ album_id }: { album_id: number }) {
       if (data == null) {
         throw error;
       }
-      // else {
-      //   console.log(data);
-      // }
+      if (data[0]) {
+        setCreateDate(data[0]?.created_at);
+        setUpdateDate(data[0]?.updated_at);
+      }
     } catch (error: any) {
       console.log(error);
     }
@@ -64,9 +82,11 @@ export default function Rate({ album_id }: { album_id: number }) {
       if (data == null) {
         throw error;
       }
-      // else {
-      //   console.log(data);
-      // }
+      else {
+        setRating(0)
+        setCreateDate('')
+        setUpdateDate('')
+      }
     } catch (error: any) {
       console.log(error);
     }
@@ -83,7 +103,7 @@ export default function Rate({ album_id }: { album_id: number }) {
     <div>
       {user_id ? (
         <div className="rounded-md bg-stone-800 p-2">
-          <p className="font-bold">{album_id} Rating:</p>
+          <p className="font-bold"> Rating:</p>
           <div className="flex items-center justify-center text-2xl">
             <div className="mr-10 flex items-center">
               <input
@@ -92,7 +112,8 @@ export default function Rate({ album_id }: { album_id: number }) {
                 id=""
                 max={10}
                 min={0}
-                defaultValue={rating}
+                defaultValue={0}
+                value={rating}
                 onChange={handleRatingChange}
                 className="w-12 bg-transparent text-right "
               />
@@ -102,9 +123,21 @@ export default function Rate({ album_id }: { album_id: number }) {
           </div>
           <div>
             <p className="text-md font-bold">First time rated:</p>
-            <p className="text-gray-400">209123093 at 91023</p>
+            <p className="text-gray-400">
+              {" "}
+              {new Date(createdDate.substring(0, 10)).toLocaleDateString(
+                "en-US",
+                { year: "numeric", month: "long", day: "numeric" }
+              )}
+            </p>
             <p className="text-md font-bold">Last time rated:</p>
-            <p className="text-gray-400">209123093 at 91023</p>
+            <p className="text-gray-400">
+              {" "}
+              {new Date(updatedDate.substring(0, 10)).toLocaleDateString(
+                "en-US",
+                { year: "numeric", month: "long", day: "numeric" }
+              )}
+            </p>
           </div>
           <div className="flex justify-between">
             <button

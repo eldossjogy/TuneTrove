@@ -8,4 +8,14 @@ export interface Album {
   id: number;
 }
 
+export interface Artist {
+  name: string;
+  image: string;
+  id: number;
+}
 
+export interface Rating {
+  created_at?: string;
+  updated_at?: string;
+  rating?: number;
+}
