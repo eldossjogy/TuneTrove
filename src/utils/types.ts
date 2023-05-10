@@ -19,3 +19,13 @@ export interface Rating {
   updated_at?: string;
   rating?: number;
 }
+
+export interface Profile{
+  id: string;
+  updated_at: string
+  username: string
+  fullname: string | null;
+  avatar: string | null;
+  privacy: string | null;
+  color_scheme: string | null;
+}

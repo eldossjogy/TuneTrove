@@ -1,8 +1,10 @@
 import React from "react";
 import NavBar from "~/components/Navbar";
 import Footer from "~/components/Footer";
-
-export default function album() {
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { GetServerSidePropsContext } from "next";
+import { Profile } from "~/utils/types";
+export default function album({ user , profilePictureUrl}: { user: Profile , profilePictureUrl: string}) {
   return (
     <div>
       <NavBar />
@@ -10,18 +12,16 @@ export default function album() {
         <div className="grid grid-cols-5 gap-2">
           <div className="h-64 w-64  overflow-hidden rounded-md">
             <img
-              src={
-                "https://qmctnmadiyjqmckffnao.supabase.co/storage/v1/object/sign/avatars/84f6357e-99dc-4751-80a9-cb43ac7f6fc8.webp?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJhdmF0YXJzLzg0ZjYzNTdlLTk5ZGMtNDc1MS04MGE5LWNiNDNhYzdmNmZjOC53ZWJwIiwiaWF0IjoxNjgzMTYzODgzLCJleHAiOjE2ODM3Njg2ODN9.PSQSONXE32tgj0-hnpoEI3ZPiMY2z0UKgnB4ZZQVcGs&t=2023-05-04T01%3A31%3A22.685Z"
-              }
-              alt="Your Image"
+              src={profilePictureUrl}
+              alt="Profile Picture"
               className="h-full w-full object-cover"
             />
           </div>
           <div className="col-span-5 flex items-end rounded-md bg-[#18181c] p-2 md:col-span-4">
             <div>
-              <p className="text-2xl font-bold text-white">{"eldossjogy"}</p>
+              <p className="text-2xl font-bold text-white">{user.username}</p>
               <p className="font-semibold text-gray-400">
-                {"Joined Septemer 29, 2002"}
+                {"Joined " + user.updated_at}
               </p>
             </div>
           </div>
@@ -54,7 +54,6 @@ export default function album() {
             </div>
             <div>
               <p className="font-bold">Score Distribution:</p>
-              
             </div>
           </div>
         </div>
@@ -63,3 +62,38 @@ export default function album() {
     </div>
   );
 }
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const supabase = createServerSupabaseClient(ctx);
+  const userName = ctx.params?.id;
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session)
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select()
+    .match({ username: userName });
+
+  if (data && data[0]) {
+    const { data: url } = await supabase.storage
+    .from("avatars")
+    .getPublicUrl(data[0].avatar_url);
+
+    return {
+      props: {
+        initialSession: session,
+        user: data[0],
+        profilePictureUrl: url.publicUrl
+      },
+    };
+  }
+};

@@ -85,7 +85,7 @@ export default function Account() {
   }
 
   return (
-    <div className="form-widget">
+    <div className="form-widget text-white">
       <Avatar
         uid={user?.id}
         url={avatar_url}
@@ -104,6 +104,7 @@ export default function Account() {
         <input
           id="username"
           type="text"
+          className="text-black"
           value={username || ""}
           onChange={(e) => setUsername(e.target.value)}
         />
@@ -113,6 +114,7 @@ export default function Account() {
         <input
           id="privacy"
           type="url"
+          className="text-black"
           value={privacy || ""}
           onChange={(e) => setprivacy(e.target.value)}
         />
@@ -136,8 +138,6 @@ export default function Account() {
           Sign Out
         </button>
       </div>
-
-      <Rate album_id={33} />
     </div>
   );
 }

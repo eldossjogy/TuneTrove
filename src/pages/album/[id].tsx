@@ -3,14 +3,11 @@ import NavBar from "~/components/Navbar";
 import Footer from "~/components/Footer";
 import Rate from "~/components/Rate";
 import { useRouter } from "next/router";
-import {
-  createServerSupabaseClient,
-  User,
-} from "@supabase/auth-helpers-nextjs";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { GetServerSidePropsContext } from "next";
 import { Rating } from "~/utils/types";
 
-export default function album({ rating } : {rating: Rating[]}) {
+export default function album({ rating }: { rating: Rating[] }) {
   const router = useRouter();
   const { id } = router.query;
   const album_id = parseInt(Array.isArray(id) ? id.join(" ") : id || "");
@@ -141,7 +138,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         permanent: false,
       },
     };
-  console.log(session.user);
 
   // Get stored album rating
   const { data, error } = await supabase
@@ -149,7 +145,10 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     .select("created_at, updated_at, rating")
     .match({ user_id: session.user.id, album_id: album_id });
 
-  console.log(album_id);
+  if (error) {
+    console.log(error);
+  }
+
   return {
     props: {
       initialSession: session,

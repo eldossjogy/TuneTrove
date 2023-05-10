@@ -25,16 +25,19 @@ export default function Rate({
   // Only set on first load
   useEffect(() => {
     if (stored_rate && stored_rate.length > 0 && stored_rate[0]) {
-      if (rating != stored_rate[0].rating) {
+      if (
+        rating != stored_rate[0].rating ||
+        createdDate != stored_rate[0].created_at ||
+        updatedDate != stored_rate[0].updated_at
+      ) {
         if (
-          stored_rate[0].rating &&
+          stored_rate[0].rating != undefined &&
           stored_rate[0].created_at &&
           stored_rate[0].updated_at
         ) {
           setRating(stored_rate[0].rating);
           setCreateDate(stored_rate[0].created_at);
           setUpdateDate(stored_rate[0].updated_at);
-          console.log(stored_rate[0].updated_at);
         }
       }
     }
@@ -81,11 +84,10 @@ export default function Rate({
         .select();
       if (data == null) {
         throw error;
-      }
-      else {
-        setRating(0)
-        setCreateDate('')
-        setUpdateDate('')
+      } else {
+        setRating(0);
+        setCreateDate("");
+        setUpdateDate("");
       }
     } catch (error: any) {
       console.log(error);
@@ -123,21 +125,9 @@ export default function Rate({
           </div>
           <div>
             <p className="text-md font-bold">First time rated:</p>
-            <p className="text-gray-400">
-              {" "}
-              {new Date(createdDate.substring(0, 10)).toLocaleDateString(
-                "en-US",
-                { year: "numeric", month: "long", day: "numeric" }
-              )}
-            </p>
+            <p className="text-gray-400">{createdDate.substring(0, 10)}</p>
             <p className="text-md font-bold">Last time rated:</p>
-            <p className="text-gray-400">
-              {" "}
-              {new Date(updatedDate.substring(0, 10)).toLocaleDateString(
-                "en-US",
-                { year: "numeric", month: "long", day: "numeric" }
-              )}
-            </p>
+            <p className="text-gray-400">{updatedDate.substring(0, 10)}</p>
           </div>
           <div className="flex justify-between">
             <button
