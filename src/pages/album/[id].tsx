@@ -5,120 +5,113 @@ import Rate from "~/components/Rate";
 import { useRouter } from "next/router";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { GetServerSidePropsContext } from "next";
-import { Rating } from "~/utils/types";
+import { Album, Rating, Track } from "~/utils/types";
+import { api } from "~/utils/api";
 
 export default function album({ rating }: { rating: Rating[] }) {
   const router = useRouter();
   const { id } = router.query;
   const album_id = parseInt(Array.isArray(id) ? id.join(" ") : id || "");
+  const albumInfo: Album | undefined = api.album.getAlbum.useQuery({
+    id: album_id,
+  })?.data?.albumInfo;
+
+  const trackList: Track[] | undefined = api.album.getTrackList.useQuery({
+    id: album_id,
+  }).data?.trackList;
+  console.log(trackList);
+
   return (
     <div>
       <NavBar />
-      <div className="mt-8 flex justify-center text-white">
-        <div className="grid grid-cols-5 gap-2">
-          <img
-            src={
-              "https://i.scdn.co/image/ab67616d0000b2739034364176f931f5eba3382e"
-            }
-            width={250}
-            className="col-span-5 rounded-md bg-[#18181c] shadow-lg md:col-span-1"
-          />
-          <div className="col-span-5 rounded-md bg-[#18181c] p-2 md:col-span-4">
-            <div>
-              <p className="text-lg font-semibold text-[#a3a3a3]">
-                {"Daft Punk"}
-              </p>
-              <p className="text-2xl font-bold text-white">{"Discovery"}</p>
-            </div>
-            <div>
-              <a
-                target="_blank"
-                // href={
-                //   "https://open.spotify.com/album/" +
-                //   posts.externalIds.spotify[0]
-                // }
-                rel="noopener noreferrer"
-              >
-                <img
-                  src="https://www.freepnglogos.com/uploads/spotify-logo-png/file-spotify-logo-png-4.png"
-                  alt=""
-                  width={25}
-                  className="mt-2"
-                />
-              </a>
-            </div>
-          </div>
-          <div className="col-span-5 rounded-md  bg-[#18181c] p-2 md:col-span-1">
-            <Rate album_id={album_id} stored_rate={rating} />
-            <div>
-              <p className="font-bold">Release Date</p>
-              <p className="mb-2">
-                {/* {new Date(posts.releaseDate).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })} */}
-                {"September 29, 2002"}
-              </p>
-              <p className="font-bold">Genre</p>
-              <p className="mb-2">{"Disco"}</p>
-              <p className="font-bold">Spotify Popularity</p>
-              <p className="mb-2">{"100"}</p>
-              <p className="font-bold">Album Type</p>
-              <p className="mb-2">{"Album"}</p>
-              <p className="font-bold">Number of Tracks</p>
-              <p className="mb-2">{"25 Tracks"}</p>
-              <p className="font-bold">Release Label</p>
-              {"Daft Punk Inc."}
-            </div>
-          </div>
-          <div className="col-span-5 rounded-md bg-[#18181c] p-2 md:col-span-4">
-            <h1 className="text-lg font-bold">Album content</h1>
-            <div className="grid grid-cols-3">
-              {[
-                "Around the World",
-                "One More Time",
-                "Get Lucky",
-                "Harder, Better, Faster, Stronger",
-                "Digital Love",
-                "Instant Crush",
-                "Something About Us",
-                "Lose Yourself to Dance",
-                "Robot Rock",
-                "Aerodynamic",
-                "Face to Face",
-                "Technologic",
-                "Da Funk",
-                "Veridis Quo",
-                "Giorgio by Moroder",
-                "Human After All",
-                "Teachers",
-                "Within",
-                "Crescendolls",
-                "Touch",
-                "Superheroes",
-                "Nightvision",
-                "Voyager",
-                "Doin' It Right",
-                "The Game of Love",
-              ].map((item, index) => (
-                <div
-                  key={index}
-                  className="col-span-3 rounded-md p-2 md:col-span-1"
-                  style={{ flexBasis: "30%" }}
+      {albumInfo ? (
+        <div className="mt-8 flex justify-center text-white">
+          <div className="grid grid-cols-5 gap-2">
+            <img
+              src={albumInfo.image}
+              width={250}
+              className="col-span-5 rounded-md bg-[#18181c] shadow-lg md:col-span-1"
+            />
+            <div className="col-span-5 rounded-md bg-[#18181c] p-2 md:col-span-4">
+              <div>
+                <p className="text-lg font-semibold text-[#a3a3a3]">
+                  {albumInfo.artists[0].name}
+                </p>
+                <p className="text-2xl font-bold text-white">
+                  {albumInfo.name}
+                </p>
+              </div>
+              <div>
+                <a
+                  target="_blank"
+                  href={
+                    "https://open.spotify.com/album/" +
+                    albumInfo.externalIds.spotify[0]
+                  }
+                  rel="noopener noreferrer"
                 >
-                  <p className="font-bold">
-                    {index + 1}. {item}
-                  </p>
-                  <p className="ml-4 font-semibold text-[#a3a3a3]">
-                    {"Daft Punk"}
-                  </p>
-                </div>
-              ))}
+                  <img
+                    src="https://www.freepnglogos.com/uploads/spotify-logo-png/file-spotify-logo-png-4.png"
+                    alt=""
+                    width={25}
+                    className="mt-2"
+                  />
+                </a>
+              </div>
+            </div>
+            <div className="col-span-5 rounded-md  bg-[#18181c] p-2 md:col-span-1">
+              <Rate album_id={album_id} stored_rate={rating} />
+              <div>
+                <p className="font-bold">Release Date</p>
+                <p className="mb-2">
+                  {new Date(albumInfo.releaseDate).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </p>
+                <p className="font-bold">Genre</p>
+                <p className="mb-2">{albumInfo.genres}</p>
+                <p className="font-bold">Spotify Popularity</p>
+                <p className="mb-2">{albumInfo.spotifyPopularity}</p>
+                <p className="font-bold">Album Type</p>
+                <p className="mb-2">{albumInfo.type}</p>
+                <p className="font-bold">Number of Tracks</p>
+                <p className="mb-2">{albumInfo.totalTracks + " Tracks"}</p>
+                <p className="font-bold">Release Label</p>
+                {albumInfo.label}
+              </div>
+            </div>
+            <div className="col-span-5 rounded-md bg-[#18181c] p-2 md:col-span-4">
+              {trackList ? (
+                <>
+                  <h1 className="text-lg font-bold">Album content</h1>
+                  <div className="grid grid-cols-3">
+                    {trackList.map((track, index) => (
+                      <div
+                        key={index}
+                        className="col-span-3 rounded-md p-2 md:col-span-1"
+                        style={{ flexBasis: "30%" }}
+                      >
+                        <p className="font-bold">
+                          {track.name}
+                        </p>
+                        <p className="ml-4 font-semibold text-[#a3a3a3]">
+                          {track.artists[0].name}
+                        </p>
+                      </div>
+                    ))}
+                  </div>{" "}
+                </>
+              ) : (
+                <></>
+              )}
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <></>
+      )}
       <Footer />
     </div>
   );
