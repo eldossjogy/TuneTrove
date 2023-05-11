@@ -18,6 +18,7 @@ const Search: NextPage = () => {
           <div className="flex flex-col">
             <div id="albums-container" className="mb-4">
               <h2 className="text-xl font-bold text-white ">Albums:</h2>
+              {searchResult.data.albums ? 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {searchResult.data.albums.map((album: Album) => (
                   <div className="text-white" key={album.id} onClick={() => {{router.push(`/album/${album.id}`)}}}>
@@ -30,7 +31,7 @@ const Search: NextPage = () => {
                       />
                       <div className="ml-2">
                         <p className="text-xl font-bold">{album.name}</p>
-                        <p>{album.artists[0].name}</p>
+                        <p>{album.artists && album.artists[0] ? album.artists[0].name : "NONE"}</p>
                         <p>{album.totalTracks} Tracks</p>
                         <p>{album.id}</p>
                       </div>
@@ -42,11 +43,12 @@ const Search: NextPage = () => {
                     More... 👉
                   </p>
                 </div>
-              </div>
-            </div>
+              </div>: <>No Album</>}
+            </div> 
             <div id="artist-container" className="mb-4">
               <div>
                 <h2 className="text-xl font-bold text-white">Artist:</h2>{" "}
+                {searchResult.data.artists ? 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
                   {searchResult.data.artists.map((artist: Artist) => (
                     <div className="mt-2 flex items-center" key={artist.id}>
@@ -67,7 +69,8 @@ const Search: NextPage = () => {
                       More... 👉
                     </p>
                   </div>
-                </div>{" "}
+                </div> 
+                : <>No Artist</>}
               </div>
             </div>
           </div>

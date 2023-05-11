@@ -35,7 +35,7 @@ export default function album({ rating }: { rating: Rating[] }) {
             <div className="col-span-5 rounded-md bg-[#18181c] p-2 md:col-span-4">
               <div>
                 <p className="text-lg font-semibold text-[#a3a3a3]">
-                  {albumInfo.artists[0].name}
+                  {albumInfo.artists && albumInfo.artists[0] ? albumInfo.artists[0].name : "NONE"}
                 </p>
                 <p className="text-2xl font-bold text-white">
                   {albumInfo.name}
@@ -97,7 +97,7 @@ export default function album({ rating }: { rating: Rating[] }) {
                           {track.name}
                         </p>
                         <p className="ml-4 font-semibold text-[#a3a3a3]">
-                          {track.artists[0].name}
+                          {track.artists && track.artists[0] ? track.artists[0].name : "NONE"}
                         </p>
                       </div>
                     ))}
@@ -126,9 +126,9 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
   if (!session)
     return {
-      redirect: {
-        destination: "/",
-        permanent: false,
+      props: {
+        initialSession: session,
+        rating: {},
       },
     };
 
