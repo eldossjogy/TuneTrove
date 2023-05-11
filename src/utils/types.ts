@@ -28,6 +28,8 @@ export interface Rating {
   created_at?: string;
   updated_at?: string;
   rating?: number;
+  album_id?: number;
+  user_id?: string;
 }
 
 export interface Profile {
@@ -60,4 +62,20 @@ export interface Track {
   name: string;
   spotifyPopularity: number;
   spotifyPreview: string;
+}
+
+
+export interface AlbumRating {
+  id: number;
+  created_at?: string | undefined;
+  updated_at?: string | undefined;
+  user_id?: string;
+  album_id?: number;
+  rating?: number;
+  image: string;
+  name: string;
+  artist: {
+    id: number;
+    name: string;
+  }[];
 }
