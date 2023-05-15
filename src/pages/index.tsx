@@ -11,13 +11,13 @@ import {
 } from "@supabase/auth-helpers-react";
 import { Database } from "~/utils/supabase";
 import ProfilePicture from "~/components/ProfilePicture";
+import Footer from "~/components/Footer";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
 interface HomeProps {
   rateCount: number;
   userCount: number;
 }
-
 
 const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
   const session = useSession();
@@ -76,61 +76,65 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
         <title>Home</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <nav className="bg-stone-900 flex  flex-col items-end justify-end md:mr-20 mr-4 mt-3">
-        {!session ? (
-          <div className=" flex basis-1/4 flex-row items-center justify-center ">
-            <a href="/login">
-              <button className="button  rounded-lg bg-green-400 px-8 py-2 font-bold">
-                Login
-              </button>
+
+      <div className="flex min-h-screen flex-col">
+        <nav className="mr-4 mt-3  flex flex-col items-end justify-end  md:mr-20">
+          {!session ? (
+            <div className=" flex basis-1/4 flex-row items-center justify-center ">
+              <a href="/login">
+                <button className="button  rounded-lg bg-green-400 px-8 py-2 font-bold">
+                  Login
+                </button>
+              </a>
+            </div>
+          ) : (
+            <a href={`/u/${username}`} className="flex items-center">
+              <ProfilePicture uid={user?.id} url={avatar_url} size={40} />
+              <h5 className="ml-3 hidden font-bold text-white md:block">
+                {username}
+              </h5>
             </a>
-          </div>
-        ) : (
-          <a href={`/u/${username}`} className="flex items-center">
-            <ProfilePicture uid={user?.id} url={avatar_url} size={40} />
-            <h5 className="ml-3 hidden font-bold text-white md:block">
-              {username}
-            </h5>
-          </a>
-        )}
-      </nav>
-      <div className="flex h-screen flex-col items-center justify-center">
-        <div className="container mx-auto px-4 pt-4">
-          <img
-            src="/awesome_logo.png"
-            alt="Logo"
-            className="w-46 h-46 mx-auto mb-4 bg-blue-300"
-          />
-          <div className="mx-auto max-w-lg  bg-cyan-300">
-            <div className="flex items-baseline  border-b-2 border-gray-500 py-2 ">
-              <label
-                htmlFor="search"
-                className="mb-2 block font-bold text-white"
-              >
-                Search:
-              </label>
+          )}
+        </nav>
+        <img
+          src="/awesome_logo.png"
+          alt="Logo"
+          className="w-46 h-46 mx-auto my-4 "
+        />
+        <div className="container mx-auto ">
+          <div className="mx-5 flex items-center rounded-full border-2 border-gray-500 px-3 py-2">
+            <label
+              htmlFor="search"
+              className="mr-2 hidden font-bold text-white md:block"
+            >
+              Search:
+            </label>
+            <div className="relative flex flex-grow items-center">
               <input
                 id="search"
-                className="mr-3 w-full appearance-none border-none bg-transparent px-2 py-1 leading-tight text-white focus:outline-none"
+                className="w-full border-none bg-transparent text-white focus:outline-none"
                 type="text"
                 onChange={handleChange}
                 value={searchValue}
                 onKeyDown={handleKeyDown}
               />
-              <button
-                className="flex-shrink-0 rounded border-4 border-blue-500 bg-blue-500 px-2 py-1 text-sm text-white hover:border-blue-700 hover:bg-blue-700"
-                type="button"
+              <svg
+                className="absolute right-3 h-5 w-5 fill-current text-gray-500"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
                 onClick={handleKeyDown}
               >
-                Search
-              </button>
+                <path
+                  className="heroicon-ui"
+                  d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.66 0 3.18-.62 4.36-1.64l.27.28v.79L20 20.59l1.41-1.41L16.5 14zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14z"
+                />
+              </svg>
             </div>
           </div>
         </div>
-
-        <div className="container mx-auto mt-8 bg-purple-300">
-          <div className="mb-4 flex justify-between">
-            <div className="mr-4 w-1/3 rounded-lg bg-[#18181c] p-4">
+        <div className="container mx-auto">
+          <div className="m-5 grid grid-cols-3 gap-4 ">
+            <div className="col-span-3 rounded-lg bg-[#18181c]   p-4 md:col-span-1">
               <h2 className="mb-2 text-lg font-light text-white">
                 With over{" "}
                 <span className="font-bold text-green-400">
@@ -139,19 +143,29 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
                 rates{" "}
               </h2>
             </div>
-            <div className="mr-4 w-1/3 rounded-lg bg-[#18181c] p-4">
+            <div className="col-span-3  rounded-lg bg-[#18181c] p-4 md:col-span-1">
               <h2 className="mb-2 text-lg font-light text-white">
                 With over{" "}
                 <span className="font-bold text-green-400">
                   {userCount - 1}
                 </span>{" "}
-                users
+                users{" "}
               </h2>
             </div>
-            <div className="w-1/3 rounded-lg bg-[#18181c] p-4">
-              <h2 className="mb-2 text-lg font-light text-white">Stat 3</h2>
+            <div className="col-span-3 rounded-lg bg-[#18181c] p-4 md:col-span-1">
+              <h2 className="mb-2 text-lg font-light text-white">
+                With over{" "}
+                <span className="font-bold text-green-400">
+                  {userCount - 1}
+                </span>{" "}
+                users{" "}
+              </h2>
             </div>
           </div>
+        </div>
+        <div className="flex-grow"></div>
+        <div className="mt-auto">
+          <Footer />
         </div>
       </div>
     </>

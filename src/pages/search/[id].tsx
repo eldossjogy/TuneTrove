@@ -51,7 +51,7 @@ const Search: NextPage = () => {
                 {searchResult.data.artists ? 
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ">
                   {searchResult.data.artists.map((artist: Artist) => (
-                    <div className="mt-2 flex items-center" key={artist.id}>
+                    <div className="mt-2 flex items-center" key={artist.id}  onClick={() => {{router.push(`/artist/${artist.id}`)}}}>
                       <div className="h-32 w-32 overflow-hidden rounded-full">
                         <img
                           src={artist.image}
