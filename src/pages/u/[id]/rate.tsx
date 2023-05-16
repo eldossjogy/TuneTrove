@@ -29,9 +29,6 @@ export default function rate({ rateList ,username }: { rateList: Rating[], usern
     }
     return possessiveUsername;
   }
-
-  
-  // console.log(updatedRateList)
   return (
     <>
       <NavBar />
@@ -39,11 +36,12 @@ export default function rate({ rateList ,username }: { rateList: Rating[], usern
         <div className="flex flex-col">
           <h1 className="mb-2 text-2xl font-bold">{addPossessiveGrammar(username)} ratings:</h1>
           <div id="albums-container" className="mb-4">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6" >
               {updatedRateList.map((album, index) => (
-                <div
+                <a href={"/album/"+album.id}  key={index}>
+                  <div
                   className="h-50 w-44 rounded-md bg-[#18181c] p-2"
-                  key={index}
+                 
                 >
                   <div className="h-40 w-40 rounded-lg">
                     <img src={album.image} className="rounded-lg" />
@@ -58,6 +56,7 @@ export default function rate({ rateList ,username }: { rateList: Rating[], usern
                     </div>
                   </div>
                 </div>
+                </a>
               ))}
             </div>
           </div>

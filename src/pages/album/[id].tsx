@@ -19,7 +19,6 @@ export default function album({ rating }: { rating: Rating[] }) {
   const trackList: Track[] | undefined = api.album.getTrackList.useQuery({
     id: album_id,
   }).data?.trackList;
-  console.log(trackList);
 
   return (
     <div>

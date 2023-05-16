@@ -19,9 +19,15 @@ export interface Album {
 }
 
 export interface Artist {
-  name: string;
-  image: string;
+  externalIds: {
+    spotify: string[];
+  };
+  followers: number;
+  genres: string[];
   id: number;
+  image: string;
+  name: string;
+  spotifyPopularity: number;
 }
 
 export interface Rating {
@@ -63,7 +69,6 @@ export interface Track {
   spotifyPopularity: number;
   spotifyPreview: string;
 }
-
 
 export interface AlbumRating {
   id: number;
