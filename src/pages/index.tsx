@@ -10,10 +10,10 @@ import {
   useSupabaseClient,
 } from "@supabase/auth-helpers-react";
 import { Database } from "~/utils/supabase";
-import ProfilePicture from "~/components/ProfilePicture";
 import Footer from "~/components/Footer";
+import Avatar from "~/components/Avatar";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
-
+ 
 interface HomeProps {
   rateCount: number;
   userCount: number;
@@ -89,7 +89,7 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
             </div>
           ) : (
             <a href={`/u/${username}`} className="flex items-center">
-              <ProfilePicture uid={user?.id} url={avatar_url} size={40} />
+              <Avatar uid={user?.id} url={avatar_url} size={50}  rounded={100}/>
               <h5 className="ml-3 hidden font-bold text-white md:block">
                 {username}
               </h5>

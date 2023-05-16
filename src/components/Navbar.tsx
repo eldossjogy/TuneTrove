@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import ProfilePicture from "./ProfilePicture";
 import {
   useUser,
   useSession,
   useSupabaseClient,
 } from "@supabase/auth-helpers-react";
 import { Database } from "~/utils/supabase";
+import Avatar from "./Avatar";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
-
+ 
 export default function NavBar() {
   const session = useSession();
   const supabase = useSupabaseClient();
@@ -85,7 +85,12 @@ export default function NavBar() {
         </div>
       ) : (
         <a href={`/u/${username}`} className="flex items-center">
-          <ProfilePicture uid={user?.id} url={avatar_url} size={40} />
+           <Avatar
+              uid={user?.id}
+              url={avatar_url}
+              size={50}
+              rounded={100}
+            />
           <h5 className="ml-3 font-bold text-white hidden md:block">{username}</h5>
         </a>
       )}

@@ -52,7 +52,7 @@ export default function rate({ rateList ,username }: { rateList: Rating[], usern
                     <p className="text-lg font-bold">{album.name} </p>
                     <div className="flex justify-between">
                       <p className="font-semibold">
-                        {album.artist && album.artist[0] ? album.artist[0].name : "NONE"}
+                        {album.artist && album.artist[0] ? album.artist[0].name : ""}
                       </p>
                       <p className="font-bold">{album.rating}</p>
                     </div>

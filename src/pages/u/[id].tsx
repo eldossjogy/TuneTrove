@@ -5,6 +5,7 @@ import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { GetServerSidePropsContext } from "next";
 import { Profile } from "~/utils/types";
 import { useRouter } from "next/router";
+import Avatar from "~/components/Avatar";
 
 export default function album({
   user,
@@ -25,11 +26,12 @@ export default function album({
       <NavBar />
       <div className="mt-8 flex justify-center text-white">
         <div className="grid grid-cols-5 gap-2">
-          <div className="h-64 w-64  overflow-hidden rounded-md">
-            <img
-              src={profilePictureUrl}
-              alt="Profile Picture"
-              className="h-full w-full object-cover"
+          <div className="h-64 w-64 overflow-hidden ">
+            <Avatar
+              uid={user?.id}
+              url={profilePictureUrl}
+              size={256}
+              rounded={10}
             />
           </div>
           <div className="col-span-5 flex items-end rounded-md bg-[#18181c] p-2 md:col-span-4">
@@ -100,9 +102,9 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     .match({ username: userName });
 
   if (data && data[0]) {
-    const { data: url } = await supabase.storage
-      .from("avatars")
-      .getPublicUrl(data[0].avatar_url);
+    // const { data: url } = await supabase.storage
+    //   .from("avatars")
+    //   .getPublicUrl(data[0].avatar_url);
 
     const { data: rateData, error } = await supabase
       .from("rates")
@@ -125,7 +127,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       props: {
         initialSession: session,
         user: data[0],
-        profilePictureUrl: url.publicUrl,
+        profilePictureUrl: data[0].avatar_url,
         rateStats: {
           average: rateAverage,
           count: rateCount,
