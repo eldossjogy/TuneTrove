@@ -16,7 +16,6 @@ export default function album() {
     api.artist.getDiscography.useQuery({
       id: artist_id,
     })?.data?.albumList;
-  // console.log(artistDiscography);
   return (
     <div>
       <NavBar />

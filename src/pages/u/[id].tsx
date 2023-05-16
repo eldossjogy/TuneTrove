@@ -3,23 +3,43 @@ import NavBar from "~/components/Navbar";
 import Footer from "~/components/Footer";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import { GetServerSidePropsContext } from "next";
-import { Profile } from "~/utils/types";
+import { Profile, Rating } from "~/utils/types";
 import { useRouter } from "next/router";
 import Avatar from "~/components/Avatar";
+import { api } from "~/utils/api";
+import BarGraph from "~/components/BarGraph";
 
 export default function album({
   user,
   profilePictureUrl,
   rateStats,
+  lastRated,
+  distribution,
 }: {
   user: Profile;
   profilePictureUrl: string;
   rateStats: { count: number; average: number };
+  lastRated: Rating;
+  distribution: { [key: number]: number };
 }) {
   const router = useRouter();
   const handleRateClick = () => {
     router.push(`${router.asPath}/rate`);
   };
+
+  let latestInfo:
+    | {
+        image: string;
+        name: string;
+        id: number;
+        artist: { id: number; name: string }[];
+      }
+    | undefined = undefined;
+
+  if (lastRated.album_id) {
+    latestInfo = api.album.getMetadata.useQuery({ id: lastRated.album_id }).data
+      ?.metadata;
+  }
 
   return (
     <div>
@@ -62,25 +82,33 @@ export default function album({
           <div className="col-span-5 rounded-md bg-[#18181c] p-2 pb-3 md:col-span-4">
             <div className="mb-3">
               <p className="font-bold">Recently Rated:</p>
-              <div className="mt-2 flex items-center">
-                <img
-                  src={
-                    "https://stats.fm/_next/image?url=https%3A%2F%2Fi.scdn.co%2Fimage%2Fab67616d0000b273c01fb46a028208757ee93fbc&w=256&q=75"
-                  }
-                  alt=""
-                  width={150}
-                  className="rounded-lg"
-                />
-                <div className="ml-2">
-                  <p className="text-xl font-bold">{"Tana Talk 4"}</p>
-                  <p>{"Benny The Butcher"}</p>
-                  <p>⭐⭐⭐⭐</p>
+              {latestInfo ? (
+                <div className="mt-2 flex items-center">
+                  <img
+                    src={latestInfo.image}
+                    alt=""
+                    width={150}
+                    className="rounded-lg"
+                  />
+                  <div className="ml-2">
+                    <p className="text-xl font-bold">{latestInfo.name}</p>
+                    <p>
+                      {latestInfo.artist.map((item) => item.name).join(", ")}
+                    </p>
+                    <p>⭐⭐⭐⭐</p>
+                  </div>
                 </div>
+              ) : (
+                <></>
+              )}
+            </div>
+            {distribution ? (
+              <div className="container ">
+                <BarGraph data={distribution} />
               </div>
-            </div>
-            <div>
-              <p className="font-bold">Score Distribution:</p>
-            </div>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </div>
@@ -102,10 +130,6 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     .match({ username: userName });
 
   if (data && data[0]) {
-    // const { data: url } = await supabase.storage
-    //   .from("avatars")
-    //   .getPublicUrl(data[0].avatar_url);
-
     const { data: rateData, error } = await supabase
       .from("rates")
       .select()
@@ -113,16 +137,31 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
     let rateCount = 0;
     let rateAverage = 0;
-    let rateDistribution = {};
-
+    let rateDistribution: { [key: number]: number } = {
+      0: 0,
+      1: 0,
+      2: 0,
+      3: 0,
+      4: 0,
+      5: 0,
+      6: 0,
+      7: 0,
+      8: 0,
+      9: 0,
+      10: 0,
+    };
+    let latest: Rating | undefined = {};
     if (rateData) {
       rateData.forEach((ele) => {
         rateAverage += ele.rating;
+        if (ele.rating) {
+          rateDistribution[ele.rating] = rateDistribution[ele.rating] + 1;
+        }
       });
       rateCount = rateData.length;
       rateAverage = rateAverage / rateCount;
+      latest = rateData[rateData?.length - 1];
     }
-
     return {
       props: {
         initialSession: session,
@@ -131,8 +170,9 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         rateStats: {
           average: rateAverage,
           count: rateCount,
-          distribution: rateDistribution,
         },
+        distribution: rateDistribution,
+        lastRated: latest,
       },
     };
   }
