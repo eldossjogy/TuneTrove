@@ -18,7 +18,6 @@ export default function Account() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<Profiles["username"]>(null);
-  const [privacy, setprivacy] = useState<Profiles["privacy"]>(null);
   const [avatar_url, setAvatarUrl] = useState<Profiles["avatar_url"]>(null);
 
   useEffect(() => {
@@ -31,7 +30,7 @@ export default function Account() {
 
       let { data, error, status } = await supabase
         .from("profiles")
-        .select(`username, privacy, avatar_url`)
+        .select(`username,  avatar_url`)
         .eq("id", user?.id)
         .single();
 
@@ -41,7 +40,6 @@ export default function Account() {
 
       if (data) {
         setUsername(data.username);
-        setprivacy(data.privacy);
         setAvatarUrl(data.avatar_url);
       }
     } finally {
@@ -51,11 +49,9 @@ export default function Account() {
 
   async function updateProfile({
     username,
-    privacy,
     avatar_url,
   }: {
     username: Profiles["username"];
-    privacy: Profiles["privacy"];
     avatar_url: Profiles["avatar_url"];
   }) {
     try {
@@ -65,7 +61,6 @@ export default function Account() {
       const updates = {
         id: user.id,
         username,
-        privacy,
         avatar_url,
         updated_at: new Date().toISOString(),
       };
@@ -90,7 +85,7 @@ export default function Account() {
         rounded={0}
         onUpload={(url) => {
           setAvatarUrl(url);
-          updateProfile({ username, privacy, avatar_url: url });
+          updateProfile({ username, avatar_url: url });
         }}
       />
       <div>
@@ -107,21 +102,12 @@ export default function Account() {
           onChange={(e) => setUsername(e.target.value)}
         />
       </div>
-      <div>
-        <label htmlFor="privacy">privacy</label>
-        <input
-          id="privacy"
-          type="url"
-          className="text-black"
-          value={privacy || ""}
-          onChange={(e) => setprivacy(e.target.value)}
-        />
-      </div>
+    
 
       <div>
         <button
           className="button primary block"
-          onClick={() => updateProfile({ username, privacy, avatar_url })}
+          onClick={() => updateProfile({ username, avatar_url })}
           disabled={loading}
         >
           {loading ? "Loading ..." : "Update"}

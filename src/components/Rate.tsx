@@ -125,9 +125,9 @@ export default function Rate({
           </div>
           <div>
             <p className="text-md font-bold">First time rated:</p>
-            <p className="text-gray-400">{createdDate.substring(0, 10)}</p>
+            <p className="text-gray-400">{new Date(createdDate).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
             <p className="text-md font-bold">Last time rated:</p>
-            <p className="text-gray-400">{updatedDate.substring(0, 10)}</p>
+            <p className="text-gray-400">{new Date(updatedDate).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
           </div>
           <div className="flex justify-between">
             <button

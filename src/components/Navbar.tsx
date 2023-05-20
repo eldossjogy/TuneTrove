@@ -26,13 +26,11 @@ export default function NavBar() {
     try {
       setLoading(true);
       if (!user) throw new Error("No user");
-
       let { data, error, status } = await supabase
         .from("profiles")
-        .select(`username, privacy, avatar_url`)
+        .select(`username, avatar_url`)
         .eq("id", user.id)
         .single();
-
       if (error && status !== 406) {
         throw error;
       }
@@ -87,7 +85,7 @@ export default function NavBar() {
       ) : (
         <div className="flex items-center">
           <Avatar uid={user?.id} url={avatar_url} size={50} rounded={100} />
-          <DropDown username={username}/>
+          <DropDown username={username} />
         </div>
       )}
     </div>

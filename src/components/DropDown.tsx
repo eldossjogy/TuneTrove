@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import {  useRouter } from "next/router";
+import { useRouter } from "next/router";
 interface DropDownProps {
   username: string | null;
 }
@@ -11,10 +11,9 @@ const DropDown: React.FC<DropDownProps> = ({ username }) => {
   const [isOpen, setIsOpen] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
-
+  console.log(username);
   function signOut() {
     supabase.auth.signOut();
-    console.log("sign out");
     router.push("#");
   }
   const toggleDropdown = () => {

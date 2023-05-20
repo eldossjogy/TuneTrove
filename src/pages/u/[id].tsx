@@ -58,7 +58,7 @@ export default function album({
             <div className="flex-shrink flex-grow">
               <p className="text-2xl font-bold text-white">{user.username}</p>
               <p className="font-semibold text-gray-400">
-                {"Joined " + user.updated_at}
+                {"Joined " +  new Date(user.updated_at).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
               </p>
             </div>
             <div className="ml-auto">
@@ -83,7 +83,8 @@ export default function album({
             <div className="mb-3">
               <p className="font-bold">Recently Rated:</p>
               {latestInfo ? (
-                <div className="mt-2 flex items-center">
+               <a href={'/album/'+ latestInfo.id}  >
+                 <div className="mt-2 flex items-center ">
                   <img
                     src={latestInfo.image}
                     alt=""
@@ -95,9 +96,9 @@ export default function album({
                     <p>
                       {latestInfo.artist.map((item) => item.name).join(", ")}
                     </p>
-                    <p>⭐⭐⭐⭐</p>
                   </div>
                 </div>
+               </a>
               ) : (
                 <></>
               )}

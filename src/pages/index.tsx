@@ -53,7 +53,7 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
 
       let { data, error, status } = await supabase
         .from("profiles")
-        .select(`username, privacy, avatar_url`)
+        .select(`username,  avatar_url`)
         .eq("id", user.id)
         .single();
 
