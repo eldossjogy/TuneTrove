@@ -12,8 +12,9 @@ import {
 import { Database } from "~/utils/supabase";
 import Footer from "~/components/Footer";
 import Avatar from "~/components/Avatar";
+import DropDown from "~/components/DropDown";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
- 
+
 interface HomeProps {
   rateCount: number;
   userCount: number;
@@ -88,12 +89,10 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
               </a>
             </div>
           ) : (
-            <a href={`/u/${username}`} className="flex items-center">
-              <Avatar uid={user?.id} url={avatar_url} size={50}  rounded={100}/>
-              <h5 className="ml-3 hidden font-bold text-white md:block">
-                {username}
-              </h5>
-            </a>
+            <div className="flex items-center">
+              <Avatar uid={user?.id} url={avatar_url} size={50} rounded={100} />
+              <DropDown username={username}/>
+            </div>
           )}
         </nav>
         <img
@@ -137,27 +136,21 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
             <div className="col-span-3 rounded-lg bg-[#18181c]   p-4 md:col-span-1">
               <h2 className="mb-2 text-lg font-light text-white">
                 With over{" "}
-                <span className="font-bold text-green-400">
-                  {rateCount}
-                </span>{" "}
+                <span className="font-bold text-green-400">{rateCount}</span>{" "}
                 rates{" "}
               </h2>
             </div>
             <div className="col-span-3  rounded-lg bg-[#18181c] p-4 md:col-span-1">
               <h2 className="mb-2 text-lg font-light text-white">
                 With over{" "}
-                <span className="font-bold text-green-400">
-                  {userCount}
-                </span>{" "}
+                <span className="font-bold text-green-400">{userCount}</span>{" "}
                 users{" "}
               </h2>
             </div>
             <div className="col-span-3 rounded-lg bg-[#18181c] p-4 md:col-span-1">
               <h2 className="mb-2 text-lg font-light text-white">
                 With over{" "}
-                <span className="font-bold text-green-400">
-                  {userCount}
-                </span>{" "}
+                <span className="font-bold text-green-400">{userCount}</span>{" "}
                 users{" "}
               </h2>
             </div>

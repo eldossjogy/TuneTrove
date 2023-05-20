@@ -7,8 +7,9 @@ import {
 } from "@supabase/auth-helpers-react";
 import { Database } from "~/utils/supabase";
 import Avatar from "./Avatar";
+import DropDown from "./DropDown";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
- 
+
 export default function NavBar() {
   const session = useSession();
   const supabase = useSupabaseClient();
@@ -84,15 +85,10 @@ export default function NavBar() {
           </a>
         </div>
       ) : (
-        <a href={`/u/${username}`} className="flex items-center">
-           <Avatar
-              uid={user?.id}
-              url={avatar_url}
-              size={50}
-              rounded={100}
-            />
-          <h5 className="ml-3 font-bold text-white hidden md:block">{username}</h5>
-        </a>
+        <div className="flex items-center">
+          <Avatar uid={user?.id} url={avatar_url} size={50} rounded={100} />
+          <DropDown username={username}/>
+        </div>
       )}
     </div>
   );
