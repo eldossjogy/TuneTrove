@@ -4,10 +4,11 @@ import {
   useSupabaseClient,
   useSession,
 } from "@supabase/auth-helpers-react";
+import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
+import { GetServerSidePropsContext } from "next";
 import { Database } from "~/utils/supabase";
 import Avatar from "~/components/Avatar";
 import { useRouter } from "next/router";
-import Rate from "~/components/Rate";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
 export default function Account() {
@@ -24,13 +25,9 @@ export default function Account() {
     getProfile();
   }, [session]);
 
-  //   Need to fix redirecting
   async function getProfile() {
     try {
       setLoading(true);
-      if (!user && loading == false) {
-        router.push("/login");
-      }
 
       let { data, error, status } = await supabase
         .from("profiles")
@@ -90,6 +87,7 @@ export default function Account() {
         uid={user?.id}
         url={avatar_url}
         size={150}
+        rounded={0}
         onUpload={(url) => {
           setAvatarUrl(url);
           updateProfile({ username, privacy, avatar_url: url });
@@ -140,4 +138,28 @@ export default function Account() {
       </div>
     </div>
   );
+}
+
+
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {  
+  const supabase = createServerSupabaseClient(ctx)
+ 
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  if (!session)
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    }
+
+  return {
+    props: {
+      initialSession: session,
+      user: session.user,
+    },
+  }
 }

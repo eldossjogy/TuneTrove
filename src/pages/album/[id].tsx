@@ -33,9 +33,22 @@ export default function album({ rating }: { rating: Rating[] }) {
             />
             <div className="col-span-5 rounded-md bg-[#18181c] p-2 md:col-span-4">
               <div>
-                <p className="text-lg font-semibold text-[#a3a3a3]">
-                  {albumInfo.artists && albumInfo.artists[0] ? albumInfo.artists[0].name : "NONE"}
-                </p>
+                {albumInfo.artists && albumInfo.artists[0] ? (
+                  <>
+                    {albumInfo.artists.map((artist, index) => (
+                      <span
+                        key={artist.id}
+                        className="text-lg font-semibold text-[#a3a3a3]"
+                      >
+                        <a href={`/artist/${artist.id}`}>{artist.name}</a>
+                        {index !== albumInfo.artists.length - 1 && ", "}
+                      </span>
+                    ))}
+                  </>
+                ) : (
+                  ""
+                )}
+
                 <p className="text-2xl font-bold text-white">
                   {albumInfo.name}
                 </p>
@@ -92,11 +105,11 @@ export default function album({ rating }: { rating: Rating[] }) {
                         className="col-span-3 rounded-md p-2 md:col-span-1"
                         style={{ flexBasis: "30%" }}
                       >
-                        <p className="font-bold">
-                          {track.name}
-                        </p>
+                        <p className="font-bold">{track.name}</p>
                         <p className="ml-4 font-semibold text-[#a3a3a3]">
-                          {track.artists && track.artists[0] ? track.artists[0].name : "NONE"}
+                          {track.artists && track.artists[0]
+                            ? track.artists[0].name
+                            : "NONE"}
                         </p>
                       </div>
                     ))}

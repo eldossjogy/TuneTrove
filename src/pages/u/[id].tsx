@@ -34,9 +34,9 @@ export default function album({
         id: number;
         artist: { id: number; name: string }[];
       }
-    | undefined = undefined;
-
-  if (lastRated.album_id) {
+    | null
+    | undefined = null;
+  if (lastRated && lastRated.album_id) {
     latestInfo = api.album.getMetadata.useQuery({ id: lastRated.album_id }).data
       ?.metadata;
   }
@@ -102,7 +102,7 @@ export default function album({
                 <></>
               )}
             </div>
-            {distribution ? (
+            {distribution && rateStats.count > 0 ? (
               <div className="container ">
                 <BarGraph data={distribution} />
               </div>
@@ -150,17 +150,19 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       9: 0,
       10: 0,
     };
-    let latest: Rating | undefined = {};
+    let latest: Rating | null | undefined = null;
     if (rateData) {
       rateData.forEach((ele) => {
-        rateAverage += ele.rating;
         if (ele.rating) {
+          rateAverage += ele.rating;
           rateDistribution[ele.rating] = rateDistribution[ele.rating] + 1;
         }
       });
       rateCount = rateData.length;
-      rateAverage = rateAverage / rateCount;
-      latest = rateData[rateData?.length - 1];
+      if (rateData.length > 0) {
+        rateAverage = rateAverage / rateCount;
+        latest = rateData[rateData?.length - 1];
+      }
     }
     return {
       props: {

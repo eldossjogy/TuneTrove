@@ -138,7 +138,7 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
               <h2 className="mb-2 text-lg font-light text-white">
                 With over{" "}
                 <span className="font-bold text-green-400">
-                  {rateCount - 1}
+                  {rateCount}
                 </span>{" "}
                 rates{" "}
               </h2>
@@ -147,7 +147,7 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
               <h2 className="mb-2 text-lg font-light text-white">
                 With over{" "}
                 <span className="font-bold text-green-400">
-                  {userCount - 1}
+                  {userCount}
                 </span>{" "}
                 users{" "}
               </h2>
@@ -156,7 +156,7 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
               <h2 className="mb-2 text-lg font-light text-white">
                 With over{" "}
                 <span className="font-bold text-green-400">
-                  {userCount - 1}
+                  {userCount}
                 </span>{" "}
                 users{" "}
               </h2>
