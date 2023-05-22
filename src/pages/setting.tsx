@@ -1,34 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   useUser,
   useSupabaseClient,
   useSession,
 } from "@supabase/auth-helpers-react";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { GetServerSidePropsContext } from "next";
-import { Database } from "~/utils/supabase";
+import type { GetServerSidePropsContext } from "next";
+import type { Database } from "~/utils/supabase";
 import Avatar from "~/components/Avatar";
-import { useRouter } from "next/router";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
 export default function Account() {
   const supabase = useSupabaseClient<Database>();
   const user = useUser();
   const session = useSession();
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<Profiles["username"]>(null);
   const [avatar_url, setAvatarUrl] = useState<Profiles["avatar_url"]>(null);
 
-  useEffect(() => {
-    getProfile();
-  }, [session]);
-
-  async function getProfile() {
+  const getProfile = useCallback(async () => {
     try {
       setLoading(true);
-
-      let { data, error, status } = await supabase
+      const { data, error, status } = await supabase
         .from("profiles")
         .select(`username,  avatar_url`)
         .eq("id", user?.id)
@@ -45,7 +38,13 @@ export default function Account() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [supabase, user]);
+
+  useEffect(() => {
+    getProfile().catch((error) => {
+      console.error(error);
+    });
+  }, [session, getProfile]);
 
   async function updateProfile({
     username,
@@ -65,7 +64,7 @@ export default function Account() {
         updated_at: new Date().toISOString(),
       };
 
-      let { error } = await supabase.from("profiles").upsert(updates);
+      const { error } = await supabase.from("profiles").upsert(updates);
       if (error) throw error;
       alert("Profile updated!");
     } catch (error) {
@@ -85,7 +84,9 @@ export default function Account() {
         rounded={0}
         onUpload={(url) => {
           setAvatarUrl(url);
-          updateProfile({ username, avatar_url: url });
+          updateProfile({ username, avatar_url: url }).catch((error) => {
+            console.error(error);
+          });
         }}
       />
       <div>
@@ -102,12 +103,15 @@ export default function Account() {
           onChange={(e) => setUsername(e.target.value)}
         />
       </div>
-    
 
       <div>
         <button
           className="button primary block"
-          onClick={() => updateProfile({ username, avatar_url })}
+          onClick={() => {
+            updateProfile({ username, avatar_url }).catch((error) => {
+              console.error(error);
+            });
+          }}
           disabled={loading}
         >
           {loading ? "Loading ..." : "Update"}
@@ -117,7 +121,11 @@ export default function Account() {
       <div>
         <button
           className="button block"
-          onClick={() => supabase.auth.signOut()}
+          onClick={() => {
+            supabase.auth.signOut().catch((error) => {
+              console.error(error);
+            });
+          }}
         >
           Sign Out
         </button>
@@ -126,26 +134,25 @@ export default function Account() {
   );
 }
 
+export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
+  const supabase = createServerSupabaseClient(ctx);
 
-export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {  
-  const supabase = createServerSupabaseClient(ctx)
- 
   const {
     data: { session },
-  } = await supabase.auth.getSession()
+  } = await supabase.auth.getSession();
 
   if (!session)
     return {
       redirect: {
-        destination: '/login',
+        destination: "/login",
         permanent: false,
       },
-    }
+    };
 
   return {
     props: {
       initialSession: session,
       user: session.user,
     },
-  }
-}
+  };
+};

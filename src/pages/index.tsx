@@ -1,7 +1,7 @@
-import { type NextPage } from "next";
+import type { NextPage } from "next";
 import Head from "next/head";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { GetServerSidePropsContext } from "next";
+import type { GetServerSidePropsContext } from "next";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import {
@@ -9,10 +9,14 @@ import {
   useUser,
   useSupabaseClient,
 } from "@supabase/auth-helpers-react";
-import { Database } from "~/utils/supabase";
+import type { Database } from "~/utils/supabase";
 import Footer from "~/components/Footer";
 import Avatar from "~/components/Avatar";
 import DropDown from "~/components/DropDown";
+import Image from "next/image";
+import Link from "next/link";
+import { useCallback } from "react";
+
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
 interface HomeProps {
@@ -24,37 +28,30 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
   const session = useSession();
   const user = useUser();
   const supabase = useSupabaseClient();
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const [searchValue, setSearchValue] = useState("");
   const [username, setUsername] = useState<Profiles["username"]>(null);
   const [avatar_url, setAvatarUrl] = useState<Profiles["avatar_url"]>(null);
-  const handleKeyDown = (event: any) => {
+  const handleKeyDown = (event: React.KeyboardEvent) => {
     if (
       (event.key === "Enter" || event.type == "click") &&
       searchValue.trim() !== ""
     ) {
-      router.push(`/search/${searchValue.trim()}`);
+      router.push(`/search/${searchValue.trim()}`).catch((error) => {
+        console.error(error);
+      });
     }
   };
 
-  const handleChange = (event: any) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchValue(event.target.value);
   };
-
-  useEffect(() => {
-    getProfile();
-  }, [session]);
-
-  async function getProfile() {
+  const getProfile = useCallback(async () => {
     try {
-      setLoading(true);
-      if (!user) throw new Error("No user");
-
-      let { data, error, status } = await supabase
+      const { data, error, status } = await supabase
         .from("profiles")
         .select(`username,  avatar_url`)
-        .eq("id", user.id)
+        .eq("id", user?.id)
         .single();
 
       if (error && status !== 406) {
@@ -62,14 +59,18 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
       }
 
       if (data) {
-        setUsername(data.username);
-        setAvatarUrl(data.avatar_url);
+        setUsername(data.username as string);
+        setAvatarUrl(data.avatar_url as string);
       }
-    } catch (error) {
     } finally {
-      setLoading(false);
     }
-  }
+  }, [supabase, user]);
+
+  useEffect(() => {
+    getProfile().catch((error) => {
+      console.error(error);
+    });
+  }, [session, getProfile]);
 
   return (
     <>
@@ -82,22 +83,24 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
         <nav className="mr-4 mt-3  flex flex-col items-end justify-end  md:mr-20">
           {!session ? (
             <div className=" flex basis-1/4 flex-row items-center justify-center ">
-              <a href="/login">
+              <Link href="/login">
                 <button className="button  rounded-lg bg-green-400 px-8 py-2 font-bold">
                   Login
                 </button>
-              </a>
+              </Link>
             </div>
           ) : (
             <div className="flex items-center">
               <Avatar uid={user?.id} url={avatar_url} size={50} rounded={100} />
-              <DropDown username={username}/>
+              <DropDown username={username} />
             </div>
           )}
         </nav>
-        <img
+        <Image
           src="/awesome_logo.png"
           alt="Logo"
+          width={500}
+          height={500}
           className="w-46 h-46 mx-auto my-4 "
         />
         <div className="container mx-auto ">
@@ -121,7 +124,7 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
                 className="absolute right-3 h-5 w-5 fill-current text-gray-500"
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
-                onClick={handleKeyDown}
+                onKeyDown={handleKeyDown}
               >
                 <path
                   className="heroicon-ui"
@@ -172,12 +175,8 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
   let userCount = 0;
   let rateCount = 0;
-  const { data: userDB, error: userDBError } = await supabase
-    .from("profiles")
-    .select("*");
-  const { data: rateDB, error: rateDBError } = await supabase
-    .from("rates")
-    .select("*");
+  const { data: userDB } = await supabase.from("profiles").select("*");
+  const { data: rateDB } = await supabase.from("rates").select("*");
   if (userDB) {
     userCount = userDB.length;
   }

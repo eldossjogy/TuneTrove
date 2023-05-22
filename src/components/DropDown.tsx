@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
-
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 interface DropDownProps {
   username: string | null;
 }
@@ -11,10 +11,13 @@ const DropDown: React.FC<DropDownProps> = ({ username }) => {
   const [isOpen, setIsOpen] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const router = useRouter();
-  console.log(username);
   function signOut() {
-    supabase.auth.signOut();
-    router.push("#");
+    supabase.auth.signOut().catch((error) => {
+      console.error(error);
+    });
+    router.push("#").catch((error) => {
+      console.error(error);
+    });
   }
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -72,27 +75,27 @@ const DropDown: React.FC<DropDownProps> = ({ username }) => {
             aria-orientation="vertical"
             aria-labelledby="dropdown-button"
           >
-            <a
-              href={"/u/" + username}
+            <Link
+              href={`/u/${username as string}`}
               className="text-md block px-4 py-2 text-white hover:bg-gray-100 hover:text-gray-900"
               role="menuitem"
             >
               Profile
-            </a>
-            <a
+            </Link>
+            <Link
               href="/setting"
               className="text-md block px-4 py-2 text-white hover:bg-gray-100 hover:text-gray-900"
               role="menuitem"
             >
               Setting
-            </a>
-            <a
+            </Link>
+            <div
               className="text-md block px-4 py-2 text-white hover:bg-gray-100 hover:text-gray-900"
               role="menuitem"
               onClick={signOut}
             >
               Sign Out
-            </a>
+            </div>
           </div>
         </div>
       )}

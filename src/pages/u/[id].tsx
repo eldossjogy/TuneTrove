@@ -2,14 +2,15 @@ import React from "react";
 import NavBar from "~/components/Navbar";
 import Footer from "~/components/Footer";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { GetServerSidePropsContext } from "next";
-import { Profile, Rating } from "~/utils/types";
+import type { GetServerSidePropsContext } from "next";
+import type { Profile, Rating } from "~/utils/types";
 import { useRouter } from "next/router";
 import Avatar from "~/components/Avatar";
 import { api } from "~/utils/api";
 import BarGraph from "~/components/BarGraph";
+import Image from "next/image";
 
-export default function album({
+export default function Profile({
   user,
   profilePictureUrl,
   rateStats,
@@ -23,10 +24,11 @@ export default function album({
   distribution: { [key: number]: number };
 }) {
   const router = useRouter();
-  const handleRateClick = () => {
-    router.push(`${router.asPath}/rate`);
-  };
-
+  function handleRateClick() {
+    router.push(`${router.asPath}/rate`).catch((error) => {
+      console.error(error);
+    });
+  }
   let latestInfo:
     | {
         image: string;
@@ -58,7 +60,12 @@ export default function album({
             <div className="flex-shrink flex-grow">
               <p className="text-2xl font-bold text-white">{user.username}</p>
               <p className="font-semibold text-gray-400">
-                {"Joined " +  new Date(user.updated_at).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                {"Joined " +
+                  new Date(user.updated_at).toLocaleString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
               </p>
             </div>
             <div className="ml-auto">
@@ -74,7 +81,7 @@ export default function album({
           <div className="col-span-5 rounded-md  bg-[#18181c] p-2 md:col-span-1">
             <div>
               <p className="font-bold">Albums Rated</p>
-              <p className="mb-2">{rateStats.count + " Albums"}</p>
+              <p className="mb-2">{rateStats.count.toString() + " Albums"}</p>
               <p className="font-bold">Mean Score</p>
               <p className="mb-2">{rateStats.average}</p>
             </div>
@@ -83,22 +90,23 @@ export default function album({
             <div className="mb-3">
               <p className="font-bold">Recently Rated:</p>
               {latestInfo ? (
-               <a href={'/album/'+ latestInfo.id}  >
-                 <div className="mt-2 flex items-center ">
-                  <img
-                    src={latestInfo.image}
-                    alt=""
-                    width={150}
-                    className="rounded-lg"
-                  />
-                  <div className="ml-2">
-                    <p className="text-xl font-bold">{latestInfo.name}</p>
-                    <p>
-                      {latestInfo.artist.map((item) => item.name).join(", ")}
-                    </p>
+                <a href={"/album/" + latestInfo.id.toString()}>
+                  <div className="mt-2 flex items-center ">
+                    <Image
+                      src={latestInfo.image}
+                      alt="Album Cover"
+                      width={150}
+                      height={150}
+                      className="rounded-lg"
+                    />
+                    <div className="ml-2">
+                      <p className="text-xl font-bold">{latestInfo.name}</p>
+                      <p>
+                        {latestInfo.artist.map((item) => item.name).join(", ")}
+                      </p>
+                    </div>
                   </div>
-                </div>
-               </a>
+                </a>
               ) : (
                 <></>
               )}
@@ -125,20 +133,20 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     data: { session },
   } = await supabase.auth.getSession();
 
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("profiles")
     .select()
     .match({ username: userName });
 
   if (data && data[0]) {
-    const { data: rateData, error } = await supabase
+    const { data: rateData } = await supabase
       .from("rates")
       .select()
-      .match({ user_id: data[0].id });
+      .match({ user_id: data[0].id as number });
 
     let rateCount = 0;
     let rateAverage = 0;
-    let rateDistribution: { [key: number]: number } = {
+    const rateDistribution: { [key: number]: number } = {
       0: 0,
       1: 0,
       2: 0,
@@ -153,10 +161,10 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     };
     let latest: Rating | null | undefined = null;
     if (rateData) {
-      rateData.forEach((ele) => {
+      rateData.forEach((ele: { rating?: number }) => {
         if (ele.rating) {
           rateAverage += ele.rating;
-          rateDistribution[ele.rating] = rateDistribution[ele.rating] + 1;
+          rateDistribution[ele.rating] += 1;
         }
       });
       rateCount = rateData.length;
@@ -169,7 +177,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
       props: {
         initialSession: session,
         user: data[0],
-        profilePictureUrl: data[0].avatar_url,
+        profilePictureUrl: data[0].avatar_url as string,
         rateStats: {
           average: rateAverage,
           count: rateCount,

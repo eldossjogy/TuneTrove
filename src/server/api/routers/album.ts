@@ -1,18 +1,20 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { Album, Track } from "~/utils/types";
+import type { Album, Track } from "~/utils/types";
 
 export const albumRouter = createTRPCRouter({
   getAlbum: publicProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
-      const apiUrl: string = `https://beta-api.stats.fm/api/v1/albums/${input.id}`;
+      const apiUrl = `https://beta-api.stats.fm/api/v1/albums/${input.id}`;
       try {
         const response = await fetch(apiUrl);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        const data = await response.json();
+        const data: { item: Album } = (await response.json()) as {
+          item: Album;
+        };
         const albumInfo: Album = data.item;
         return {
           albumInfo: albumInfo,
@@ -25,14 +27,16 @@ export const albumRouter = createTRPCRouter({
   getTrackList: publicProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
-      const apiUrl: string = `https://beta-api.stats.fm/api/v1/albums/${input.id}/tracks`;
+      const apiUrl = `https://beta-api.stats.fm/api/v1/albums/${input.id}/tracks`;
       try {
         const response = await fetch(apiUrl);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
 
-        const data = await response.json();
+        const data: { items: Track[] } = (await response.json()) as {
+          items: Track[];
+        };
         const trackList: Track[] = data.items;
 
         return {
@@ -43,23 +47,24 @@ export const albumRouter = createTRPCRouter({
         throw new Error("Unable to fetch album results");
       }
     }),
-    getMetadata: publicProcedure
+  getMetadata: publicProcedure
     .input(z.object({ id: z.number() }))
     .query(async ({ input }) => {
-      const apiUrl: string = `https://beta-api.stats.fm/api/v1/albums/${input.id}`;
+      const apiUrl = `https://beta-api.stats.fm/api/v1/albums/${input.id}`;
       try {
         const response = await fetch(apiUrl);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        const data = await response.json();
+        const data: { item: Album } = (await response.json()) as {
+          item: Album;
+        };
         const albumInfo: Album = data.item;
         const metadata = {
-          image : albumInfo.image,
+          image: albumInfo.image,
           name: albumInfo.name,
           artist: albumInfo.artists,
-          id: albumInfo.id
-
+          id: albumInfo.id,
         };
         return {
           metadata: metadata,

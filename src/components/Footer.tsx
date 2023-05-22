@@ -1,4 +1,4 @@
-export default function Footer() {
+ export default function Footer() {
   return (
     <footer className="text-white text-center mt-2 ">
         Powered by

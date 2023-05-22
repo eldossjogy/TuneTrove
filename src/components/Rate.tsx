@@ -1,12 +1,13 @@
-import { ChangeEvent, useEffect, useState } from "react";
-import { Database } from "~/utils/supabase";
+import { useEffect, useState } from "react";
+import type { ChangeEvent } from "react";
+import type { Database } from "~/utils/supabase";
 import {
   useSupabaseClient,
   useUser,
   useSession,
 } from "@supabase/auth-helpers-react";
 type Rates = Database["public"]["Tables"]["rates"]["Row"];
-import { Rating } from "~/utils/types";
+import type { Rating } from "~/utils/types";
 export default function Rate({
   album_id,
   stored_rate,
@@ -47,7 +48,7 @@ export default function Rate({
     if (user?.id) {
       setUser(user.id);
     }
-  }, [session]);
+  }, [session, user?.id]);
 
   async function saveRating() {
     try {
@@ -70,7 +71,7 @@ export default function Rate({
         setCreateDate(data[0]?.created_at);
         setUpdateDate(data[0]?.updated_at);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
     }
   }
@@ -89,7 +90,7 @@ export default function Rate({
         setCreateDate("");
         setUpdateDate("");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.log(error);
     }
   }
@@ -125,20 +126,32 @@ export default function Rate({
           </div>
           <div>
             <p className="text-md font-bold">First time rated:</p>
-            <p className="text-gray-400">{new Date(createdDate).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p className="text-gray-400">
+              {new Date(createdDate).toLocaleString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
             <p className="text-md font-bold">Last time rated:</p>
-            <p className="text-gray-400">{new Date(updatedDate).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p className="text-gray-400">
+              {new Date(updatedDate).toLocaleString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
           </div>
           <div className="flex justify-between">
             <button
               type="submit"
               className="mt-2 rounded  bg-green-500 px-2 py-1 font-bold text-white"
-              onClick={saveRating}
+              onClick={() => void saveRating()}
             >
               Save
             </button>
             <button
-              onClick={deleteRating}
+              onClick={() => void deleteRating()}
               type="submit"
               className="mt-2 rounded bg-red-500 px-2 py-1 font-bold text-white"
             >

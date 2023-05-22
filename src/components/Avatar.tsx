@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Database } from "~/utils/supabase";
+import type { Database } from "~/utils/supabase";
+import Image from "next/image";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
 export default function Avatar({
@@ -21,7 +22,10 @@ export default function Avatar({
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    if (url) downloadImage(url);
+    if (url)
+      downloadImage(url).catch((error) => {
+        console.error(error);
+      });
   }, [url]);
 
   async function downloadImage(path: string) {
@@ -39,9 +43,7 @@ export default function Avatar({
     }
   }
 
-  const uploadAvatar: React.ChangeEventHandler<HTMLInputElement> = async (
-    event
-  ) => {
+  async function uploadAvatar(event: React.ChangeEvent<HTMLInputElement>) {
     try {
       setUploading(true);
 
@@ -51,18 +53,17 @@ export default function Avatar({
 
       const file = event.target.files[0];
       const fileExt = file?.name.split(".").pop();
-      const fileName = `${uid}.${fileExt}`;
+      const fileName = `${uid as string}.${fileExt as string}`;
       const filePath = `${fileName}`;
-
       if (file != undefined) {
-        let { error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from("avatars")
           .upload(filePath, file, { upsert: true });
         if (uploadError) {
           throw uploadError;
         }
       } else {
-        console.log("Invalid image upload");
+        alert("Invalid image upload");
       }
 
       if (onUpload) {
@@ -70,19 +71,20 @@ export default function Avatar({
       }
     } catch (error) {
       alert("Error uploading avatar!");
-      console.log(error);
     } finally {
       setUploading(false);
     }
-  };
+  }
 
   return (
     <div>
       {avatarUrl ? (
-        <img
+        <Image
           src={avatarUrl}
           alt="Avatar"
           className="avatar image"
+          width={size}
+          height={size}
           style={{ height: size, width: size, borderRadius: rounded }}
         />
       ) : (
@@ -104,7 +106,7 @@ export default function Avatar({
             type="file"
             id="single"
             accept="image/*"
-            onChange={uploadAvatar}
+            onChange={(e) => void uploadAvatar(e)}
             disabled={uploading}
           />
         </div>

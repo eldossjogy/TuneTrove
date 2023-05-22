@@ -2,14 +2,18 @@ import React from "react";
 import NavBar from "~/components/Navbar";
 import Footer from "~/components/Footer";
 import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
-import { GetServerSidePropsContext } from "next";
+import type { GetServerSidePropsContext } from "next";
 import { api } from "~/utils/api";
-import { Rating, AlbumRating } from "~/utils/types";
+import type { Rating, AlbumRating } from "~/utils/types";
+import Image from "next/image";
 
-export default function rate({ rateList ,username }: { rateList: Rating[], username: string }) {
-  const albumMeta = api.album.getMetadata.useQuery({ id: 65252 }).data
-    ?.metadata;
-
+export default function rate({
+  rateList,
+  username,
+}: {
+  rateList: Rating[];
+  username: string;
+}) {
   const updatedRateList: AlbumRating[] = [];
   rateList.forEach((track) => {
     if (track.album_id) {
@@ -34,28 +38,35 @@ export default function rate({ rateList ,username }: { rateList: Rating[], usern
       <NavBar />
       <div className="mt-8 flex justify-center text-white">
         <div className="flex flex-col">
-          <h1 className="mb-2 text-2xl font-bold">{addPossessiveGrammar(username)} ratings:</h1>
+          <h1 className="mb-2 text-2xl font-bold">
+            {addPossessiveGrammar(username)} ratings:
+          </h1>
           <div id="albums-container" className="mb-4">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6" >
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
               {updatedRateList.map((album, index) => (
-                <a href={"/album/"+album.id}  key={index}>
-                  <div
-                  className="h-50 w-44 rounded-md bg-[#18181c] p-2"
-                 
-                >
-                  <div className="h-40 w-40 rounded-lg">
-                    <img src={album.image} className="rounded-lg" />
-                  </div>
-                  <div className="mt-1">
-                    <p className="text-lg font-bold">{album.name} </p>
-                    <div className="flex justify-between">
-                      <p className="font-semibold">
-                        {album.artist && album.artist[0] ? album.artist[0].name : ""}
-                      </p>
-                      <p className="font-bold">{album.rating}</p>
+                <a href={"/album/" + album.id.toString()} key={index}>
+                  <div className="h-50 w-44 rounded-md bg-[#18181c] p-2">
+                    <div className="h-40 w-40 rounded-lg">
+                      <Image
+                        src={album.image}
+                        alt="Album Cover"
+                        height={500}
+                        width={500}
+                        className="rounded-lg"
+                      />
+                    </div>
+                    <div className="mt-1">
+                      <p className="text-lg font-bold">{album.name} </p>
+                      <div className="flex justify-between">
+                        <p className="font-semibold">
+                          {album.artist && album.artist[0]
+                            ? album.artist[0].name
+                            : ""}
+                        </p>
+                        <p className="font-bold">{album.rating}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
                 </a>
               ))}
             </div>
@@ -74,16 +85,16 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     data: { session },
   } = await supabase.auth.getSession();
 
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("profiles")
     .select()
     .match({ username: userName });
 
   if (data && data[0]) {
-    const { data: rateData, error } = await supabase
+    const { data: rateData } = await supabase
       .from("rates")
       .select()
-      .match({ user_id: data[0].id });
+      .match({ user_id: data[0].id as number });
     return {
       props: {
         initialSession: session,
