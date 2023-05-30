@@ -25,7 +25,7 @@ export default function Album({ rating }: { rating: Rating[] }) {
   return (
     <div>
       <Head>
-        <title>{`${albumInfo?.name}`}</title>
+        <title>{albumInfo && albumInfo.name ? `${albumInfo.name}` : "Loading..."}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -103,7 +103,9 @@ export default function Album({ rating }: { rating: Rating[] }) {
                 <p className="font-bold">Album Type</p>
                 <p className="mb-2">{albumInfo.type}</p>
                 <p className="font-bold">Number of Tracks</p>
-                <p className="mb-2">{albumInfo.totalTracks.toString() + " Tracks"}</p>
+                <p className="mb-2">
+                  {albumInfo.totalTracks.toString() + " Tracks"}
+                </p>
                 <p className="font-bold">Release Label</p>
                 {albumInfo.label}
               </div>

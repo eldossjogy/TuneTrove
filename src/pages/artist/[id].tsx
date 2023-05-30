@@ -26,7 +26,8 @@ export default function Artist() {
   return (
     <div>
       <Head>
-        <title>{`${artistInfo?.name}`}</title>
+        <title>{artistInfo && artistInfo.name ? `${artistInfo.name}` : 'Loading...'}
+</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />

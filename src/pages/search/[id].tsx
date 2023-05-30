@@ -7,7 +7,6 @@ import type { Album, Artist } from "~/utils/types";
 import Image from "next/image";
 import Head from "next/head";
 
-
 const Search: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -17,7 +16,7 @@ const Search: NextPage = () => {
   return (
     <>
       <Head>
-        <title>{`Search - ${id}`}</title>
+        <title> { `Search - ${searchText}`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
