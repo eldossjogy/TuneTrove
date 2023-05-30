@@ -5,6 +5,8 @@ import { useRouter } from "next/router";
 import { api } from "~/utils/api";
 import type { Album, Artist } from "~/utils/types";
 import Image from "next/image";
+import Head from "next/head";
+
 
 const Search: NextPage = () => {
   const router = useRouter();
@@ -14,6 +16,10 @@ const Search: NextPage = () => {
 
   return (
     <>
+      <Head>
+        <title>{`Search - ${id}`}</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <NavBar />
       {searchResult.data ? (
         <div className="mt-8 flex justify-center text-white">

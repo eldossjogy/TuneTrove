@@ -9,6 +9,7 @@ import Avatar from "~/components/Avatar";
 import { api } from "~/utils/api";
 import BarGraph from "~/components/BarGraph";
 import Image from "next/image";
+import Head from "next/head";
 
 export default function Profile({
   user,
@@ -43,8 +44,22 @@ export default function Profile({
       ?.metadata;
   }
 
+  function addPossessiveGrammar(username: string) {
+    let possessiveUsername;
+    if (username.endsWith("s")) {
+      possessiveUsername = username + "'";
+    } else {
+      possessiveUsername = username + "'s";
+    }
+    return possessiveUsername;
+  }
+
   return (
     <div>
+      <Head>
+        <title>{`${addPossessiveGrammar(user.username)} profile`}</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <NavBar />
       <div className="mt-8 flex justify-center text-white">
         <div className="grid grid-cols-5 gap-2">

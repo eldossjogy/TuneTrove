@@ -5,6 +5,7 @@ import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import type { Album, Artist } from "~/utils/types";
 import Image from "next/image";
+import Head from "next/head";
 
 export default function Artist() {
   const router = useRouter();
@@ -18,8 +19,13 @@ export default function Artist() {
     api.artist.getDiscography.useQuery({
       id: artist_id,
     })?.data?.albumList;
+
   return (
     <div>
+      <Head>
+        <title>{`${artistInfo?.name}`}</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <NavBar />
       {artistInfo ? (
         <div className="mt-8 flex justify-center text-white">

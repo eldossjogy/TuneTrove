@@ -3,7 +3,8 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
- 
+import Head from "next/head";
+
 const Login = () => {
   const session = useSession();
   const supabase = useSupabaseClient();
@@ -13,7 +14,7 @@ const Login = () => {
       router.back();
     }
   }, [session, router]);
-
+ 
   return (
     <div
       style={{
@@ -23,6 +24,10 @@ const Login = () => {
         minHeight: "100vh",
       }}
     >
+      <Head>
+        <title>Login</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       {!session ? (
         <Auth
           supabaseClient={supabase}

@@ -6,6 +6,7 @@ import type { GetServerSidePropsContext } from "next";
 import { api } from "~/utils/api";
 import type { Rating, AlbumRating } from "~/utils/types";
 import Image from "next/image";
+import Head from "next/head";
 
 export default function rate({
   rateList,
@@ -33,8 +34,13 @@ export default function rate({
     }
     return possessiveUsername;
   }
+ 
   return (
     <>
+      <Head>
+        <title>{`${addPossessiveGrammar(username)} rating`}</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <NavBar />
       <div className="mt-8 flex justify-center text-white">
         <div className="flex flex-col">

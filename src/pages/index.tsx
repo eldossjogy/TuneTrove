@@ -75,7 +75,7 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
   return (
     <>
       <Head>
-        <title>Home</title>
+        <title>TuneTrove</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

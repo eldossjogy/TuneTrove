@@ -8,6 +8,7 @@ import { createServerSupabaseClient } from "@supabase/auth-helpers-nextjs";
 import type { GetServerSidePropsContext } from "next";
 import type { Database } from "~/utils/supabase";
 import Avatar from "~/components/Avatar";
+import Head from "next/head";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
 export default function Account() {
@@ -74,9 +75,13 @@ export default function Account() {
       setLoading(false);
     }
   }
-
+ 
   return (
     <div className="form-widget text-white">
+      <Head>
+        <title>Setting</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <Avatar
         uid={user?.id}
         url={avatar_url}

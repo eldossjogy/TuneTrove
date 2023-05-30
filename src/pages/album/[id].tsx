@@ -8,6 +8,7 @@ import type { GetServerSidePropsContext } from "next";
 import type { Album, Rating, Track } from "~/utils/types";
 import { api } from "~/utils/api";
 import Image from "next/image";
+import Head from "next/head";
 
 export default function Album({ rating }: { rating: Rating[] }) {
   const router = useRouter();
@@ -23,6 +24,11 @@ export default function Album({ rating }: { rating: Rating[] }) {
 
   return (
     <div>
+      <Head>
+        <title>{`${albumInfo?.name}`}</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+
       <NavBar />
       {albumInfo ? (
         <div className="mt-8 flex justify-center text-white">
@@ -59,7 +65,7 @@ export default function Album({ rating }: { rating: Rating[] }) {
               <div>
                 <a
                   target="_blank"
-                  href={`https://open.spotify.com/artist/${
+                  href={`https://open.spotify.com/album/${
                     albumInfo.externalIds.spotify[0]?.toString() as string
                   }`}
                   rel="noopener noreferrer"
