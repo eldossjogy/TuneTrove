@@ -25,6 +25,22 @@ export default function rate({
     }
   });
 
+  // Sort by rating and then alphabetically
+  updatedRateList.sort((a, b) => {
+    // Handle undefined rating property
+    const ratingA = a.rating || 0; 
+    const ratingB = b.rating || 0; 
+    
+    if (ratingA === ratingB) {
+      // Handle undefined name property
+      const nameA = a.name || ""; 
+      const nameB = b.name || "";  
+      return nameA.localeCompare(nameB);
+    }
+    
+    return ratingB - ratingA;
+  });
+
   function addPossessiveGrammar(username: string) {
     let possessiveUsername;
     if (username.endsWith("s")) {
@@ -34,7 +50,7 @@ export default function rate({
     }
     return possessiveUsername;
   }
- 
+
   return (
     <>
       <Head>
@@ -100,7 +116,8 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
     const { data: rateData } = await supabase
       .from("rates")
       .select()
-      .match({ user_id: data[0].id as number });
+      .match({ user_id: data[0].id as number })
+      .order("rating", { ascending: false });
     return {
       props: {
         initialSession: session,
