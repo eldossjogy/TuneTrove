@@ -20,6 +20,9 @@ export default function Artist() {
       id: artist_id,
     })?.data?.albumList;
 
+    // Sort by release date
+    const sortedDiscography = artistDiscography?.sort((a, b) => b.releaseDate - a.releaseDate);
+
   return (
     <div>
       <Head>
@@ -35,8 +38,8 @@ export default function Artist() {
               width={250}
               height={250}
               alt="Artist Image"
-              className="col-span-5 rounded-md bg-[#18181c] shadow-lg md:col-span-1"
-            />
+              className="col-span-5 rounded-md bg-[#18181c] shadow-lg md:col-span-1 mx-auto"
+              />
             <div className="col-span-5 rounded-md bg-[#18181c] p-2 md:col-span-4">
               <div>
                 <p className="text-lg font-semibold text-[#a3a3a3]">
@@ -79,12 +82,13 @@ export default function Artist() {
             </div>
             <div className="col-span-5 rounded-md bg-[#18181c] p-2 pb-3 md:col-span-4">
               <h1 className="text-lg font-bold">Album content</h1>
-              {artistDiscography ? (
+              {sortedDiscography ? (
                 <div className="mx-4">
-                  <div className="grid grid-cols-2">
-                    {artistDiscography.map(
+                  <div className="grid md:grid-cols-2 ">
+                    {sortedDiscography.map(
                       (album) =>
-                        album.type === "album" && (
+                        album.type === "album" && 
+                        (
                           <a
                             href={"/album/" + album.id.toString()}
                             key={album.id}
@@ -102,6 +106,9 @@ export default function Artist() {
                                   <p className="text-xl font-bold">
                                     {album.name}
                                   </p>
+                                  {/* <p>
+                                    {album.type.charAt(0).toUpperCase() + album.type.slice(1)}
+                                  </p> */}
                                   <p>
                                     {album.artists
                                       .map((item) => item.name)
