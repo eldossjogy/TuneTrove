@@ -12,16 +12,25 @@ const Login = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (session) {
-      const isNewUser = session.user?.aud === 'authenticated' && session.user?.role === 'authenticated';
-      if (isNewUser) {
-        router.push('/setting').catch((error) => {
-          console.error(error);
-        });
-      } else {
-        router.back();
+    async function fetchData() {
+      if (session) {
+        const { data } = await supabase
+          .from("profiles")
+          .select()
+          .match({ id: session.user?.id });
+        if (data && data[0] && data[0].username) {
+          router.back();
+        } else {
+          router.push("/setting").catch((error) => {
+            console.error(error);
+          });
+        }
       }
     }
+
+    fetchData().catch((error) => {
+      console.error(error);
+    });
   }, [session, router]);
 
   return (
