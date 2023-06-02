@@ -64,7 +64,7 @@ export default function rate({
             {addPossessiveGrammar(username)} ratings:
           </h1>
           <div id="albums-container" className="mb-4">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+            <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
               {updatedRateList.map((album, index) => (
                 <a href={"/album/" + album.id.toString()} key={index}>
                   <div className="h-50 w-44 rounded-md bg-[#18181c] p-2">
