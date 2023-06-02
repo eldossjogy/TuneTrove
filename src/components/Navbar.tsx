@@ -63,7 +63,7 @@ export default function NavBar() {
     <div className="flex flex-row bg-[#19191c]  py-2 lg:px-40">
       <div className=" basis-1/4">
         <Link href="/">
-          <Image src="/awesome_logo.png" alt="logo" width={50} height={50} />
+          <img src="/awesome_logo.png" alt="logo" width={50} height={50} />
         </Link>
       </div>
       <div className="  my-auto basis-2/4">
@@ -88,7 +88,9 @@ export default function NavBar() {
         </div>
       ) : (
         <div className="flex items-center">
-          <Avatar uid={user?.id} url={avatar_url} size={40} rounded={100} />
+          <a href={`/u/${username || ""}`}>
+            <Avatar uid={user?.id} url={avatar_url} size={40} rounded={100} />
+          </a>
           <DropDown username={username} />
         </div>
       )}

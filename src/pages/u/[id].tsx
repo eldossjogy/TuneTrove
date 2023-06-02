@@ -107,7 +107,7 @@ export default function Profile({
               {latestInfo ? (
                 <a href={"/album/" + latestInfo.id.toString()}>
                   <div className="mt-2 flex items-center ">
-                    <Image
+                    <img
                       src={latestInfo.image}
                       alt="Album Cover"
                       width={150}

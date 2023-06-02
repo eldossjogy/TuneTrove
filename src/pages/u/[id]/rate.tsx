@@ -69,7 +69,7 @@ export default function rate({
                 <a href={"/album/" + album.id.toString()} key={index}>
                   <div className="h-50 w-44 rounded-md bg-[#18181c] p-2">
                     <div className="h-40 w-40 rounded-lg">
-                      <Image
+                      <img
                         src={album.image}
                         alt="Album Cover"
                         height={500}

@@ -40,7 +40,7 @@ const Search: NextPage = () => {
                       }}
                     >
                       <div className="mt-2 flex">
-                        <Image
+                        <img
                           src={album.image}
                           alt="Album Cover"
                           width={150}
@@ -90,7 +90,7 @@ const Search: NextPage = () => {
                         }}
                       >
                         <div className="h-32 w-32 overflow-hidden rounded-full">
-                          <Image
+                          <img
                             src={artist.image}
                             alt="Artist Cover"
                             width={150}
