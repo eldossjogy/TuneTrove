@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import type { Database } from "~/utils/supabase";
 import Image from "next/image";
+import { useRouter } from "next/router";
 type Profiles = Database["public"]["Tables"]["profiles"]["Row"];
 
 export default function Avatar({
@@ -75,44 +76,61 @@ export default function Avatar({
       setUploading(false);
     }
   }
+ 
+  const router = useRouter();
+  function signOut() {
+    supabase.auth.signOut().catch((error) => {
+      console.error(error);
+    });
+    router.push("#").catch((error) => {
+      console.error(error);
+    });
+  }
 
   return (
-    <div>
-      {avatarUrl ? (
-        <Image
-          src={avatarUrl}
-          alt="Avatar"
-          className="avatar image"
-          width={size}
-          height={size}
-          style={{ height: size, width: size, borderRadius: rounded }}
-        />
-      ) : (
-        <div
-          className="avatar no-image"
-          style={{ height: size, width: size }}
-        />
-      )}
-      {onUpload ? (
-        <div style={{ width: size }}>
-          <label className="button primary block" htmlFor="single">
-            {uploading ? "Uploading ..." : "Upload"}
-          </label>
-          <input
-            style={{
-              visibility: "hidden",
-              position: "absolute",
-            }}
-            type="file"
-            id="single"
-            accept="image/*"
-            onChange={(e) => void uploadAvatar(e)}
-            disabled={uploading}
+    <div className="flex items-center justify-center">
+      <div>
+        {avatarUrl ? (
+          <Image
+            src={avatarUrl}
+            alt="Avatar"
+            className="avatar image"
+            width={size}
+            height={size}
+            style={{ height: size, width: size, borderRadius: rounded }}
           />
+        ) : (
+          <div
+            className="avatar no-image"
+            style={{ height: size, width: size }}
+          />
+        )}
+        <div className="flex items-center justify-center">
+          {onUpload ? (
+            <div>
+              <label
+                className="rounded-xl bg-blue-400 px-4 py-2"
+                htmlFor="single"
+              >
+                {uploading ? "Uploading ..." : "Upload"}
+              </label>
+              <input
+                style={{
+                  visibility: "hidden",
+                  position: "absolute",
+                }}
+                type="file"
+                id="single"
+                accept="image/*"
+                onChange={(e) => void uploadAvatar(e)}
+                disabled={uploading}
+              />
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
-      ) : (
-        <></>
-      )}
+      </div>
     </div>
   );
 }

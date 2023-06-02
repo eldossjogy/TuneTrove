@@ -147,12 +147,12 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const {
     data: { session },
   } = await supabase.auth.getSession();
-
+ 
   const { data } = await supabase
     .from("profiles")
     .select()
     .match({ username: userName });
-
+  
   if (data && data[0]) {
     const { data: rateData } = await supabase
       .from("rates")
@@ -199,6 +199,15 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         },
         distribution: rateDistribution,
         lastRated: latest,
+      },
+    };
+  }
+  else{
+    // temp solution to no username
+    return {
+      redirect: {
+        destination: "/setting",
+        permanent: false,
       },
     };
   }
