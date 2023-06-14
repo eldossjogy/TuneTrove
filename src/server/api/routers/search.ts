@@ -16,9 +16,16 @@ export const searchRouter = createTRPCRouter({
         input.text
       )}&type=album,artist&limit=10`;
       try {
-        const response = await fetch(apiUrl);
+        let response = await fetch(apiUrl);
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          if (response.status === 500) {
+            const elasticApiUrl = `https://beta-api.stats.fm/api/v1/search/elastic?query=${encodeURIComponent(
+              input.text
+            )}&type=album,artist&limit=10`;
+            response = await fetch(elasticApiUrl);
+          } else {
+            throw new Error("Network response was not ok");
+          }
         }
         const data: Data = (await response.json()) as Data;
         const albums: Album[] = data.items.albums;

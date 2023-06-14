@@ -98,7 +98,7 @@ export default function Profile({
               <p className="font-bold">Albums Rated</p>
               <p className="mb-2">{rateStats.count.toString() + " Albums"}</p>
               <p className="font-bold">Mean Score</p>
-              <p className="mb-2">{rateStats.average}</p>
+              <p className="mb-2">{rateStats.average.toFixed(2)}</p>
             </div>
           </div>
           <div className="col-span-5 rounded-md bg-[#18181c] p-2 pb-3 md:col-span-4">
@@ -119,6 +119,17 @@ export default function Profile({
                       <p>
                         {latestInfo.artist.map((item) => item.name).join(", ")}
                       </p>
+
+                      {lastRated.updated_at
+                        ? new Date(lastRated.updated_at).toLocaleString(
+                            "en-US",
+                            {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            }
+                          )
+                        : ""}
                     </div>
                   </div>
                 </a>
@@ -147,12 +158,12 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
   const {
     data: { session },
   } = await supabase.auth.getSession();
- 
+
   const { data } = await supabase
     .from("profiles")
     .select()
     .match({ username: userName });
-  
+
   if (data && data[0]) {
     const { data: rateData } = await supabase
       .from("rates")
@@ -201,8 +212,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
         lastRated: latest,
       },
     };
-  }
-  else{
+  } else {
     // temp solution to no username
     return {
       redirect: {

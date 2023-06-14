@@ -90,8 +90,15 @@ const Home: NextPage<HomeProps> = ({ rateCount, userCount }) => {
               </Link>
             </div>
           ) : (
-            <div className="flex items-center">
-              <Avatar uid={user?.id} url={avatar_url} size={50} rounded={100} />
+            <div className="flex items-center justify-between">
+              <a href={`/u/${username || ""}`}>
+                <Avatar
+                  uid={user?.id}
+                  url={avatar_url}
+                  size={50}
+                  rounded={100}
+                />
+              </a>
               <DropDown username={username} />
             </div>
           )}

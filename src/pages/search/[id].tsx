@@ -16,7 +16,7 @@ const Search: NextPage = () => {
   return (
     <>
       <Head>
-        <title> { `Search - ${searchText}`}</title>
+        <title> {`Search - ${searchText}`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
@@ -90,14 +90,21 @@ const Search: NextPage = () => {
                         }}
                       >
                         <div className="h-32 w-32 overflow-hidden rounded-full">
-                          <img
-                            src={artist.image}
-                            alt="Artist Cover"
-                            width={150}
-                            height={150}
-                            className="h-full w-full object-cover"
-                          />
+                          {artist.image ? (
+                            <img
+                              src={artist.image}
+                              alt="Artist Cover"
+                              width={150}
+                              height={150}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center bg-stone-900 text-4xl text-stone-300">
+                              {artist.name.charAt(0)}
+                            </div>
+                          )}
                         </div>
+
                         <p className="ml-2 text-xl font-bold text-white">
                           {artist.name}
                         </p>
