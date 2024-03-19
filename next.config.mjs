@@ -20,7 +20,7 @@ const config = {
   },
 
   images: {
-    domains: ['i.scdn.co'],
+    domains: ['i.scdn.co', 'is1-ssl.mzstatic.com'],
   },
 };
 
